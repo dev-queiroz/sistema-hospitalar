@@ -1,0 +1,30 @@
+{
+  "name": "sistema-hospitalar",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "build": "tsc src/server.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-queiroz/sistema-hospitalar.git"
+  },
+  "keywords": [
+    "hospital",
+    "sistema",
+    "web",
+    "api",
+    "types",
+    "express",
+    "typescript"
+  ],
+  "author": "Douglas Vinícios dos Santos Queiroz",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/dev-queiroz/sistema-hospitalar/issues"
+  },
+  "homepage": "https://github.com/dev-queiroz/sistema-hospitalar#readme",
+  "description": ""
+}
