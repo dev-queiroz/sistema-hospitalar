@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "backend-from-the-hospitalar-sistem",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,8 +7,24 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "keywords": [
+    "typescript",
+    "express",
+    "jwt"
+  ],
+  "author": "Douglas Vinícios dos Santos Queiroz",
+  "license": "",
+  "description": "A robust sistem implementation to hospital from the Pedra Branca - CE",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.0"
+  }
 }
