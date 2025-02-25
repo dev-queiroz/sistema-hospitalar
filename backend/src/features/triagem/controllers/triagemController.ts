@@ -10,3 +10,12 @@ export const HandlerRealizarTriagem = async (req: Request, res: Response) => {
         handleError(res, 400, (error as Error).message);
     }
 };
+
+export const HandlerGetQueue = async (req: Request, res: Response) => {
+    try {
+        const queue = await triagemService.getQueue();
+        res.status(200).json(queue);
+    } catch (error) {
+        handleError(res, 500, (error as Error).message);
+    }
+};

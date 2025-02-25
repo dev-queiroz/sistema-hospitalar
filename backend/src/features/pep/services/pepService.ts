@@ -21,36 +21,53 @@ export const getProntuario = async (patientId: string) => {
     return data;
 };
 
-export const subscribeToProntuarioChanges = (
-    patientId: string | null,
-    callback: (payload: any) => void
-) => {
+export const getPatientByIdentifier = async (identifier: string) => {
+    const { data: patientBySus, error: susError } = await supabase
+        .from('patients')
+        .select('id, sus_number, cpf, nome')
+        .eq('sus_number', identifier)
+        .single();
+
+    if (!patientBySus) {
+        const { data: patientByCpf, error: cpfError } = await supabase
+            .from('patients')
+            .select('id, sus_number, cpf, nome')
+            .eq('cpf', identifier)
+            .single();
+        if (cpfError) throw new Error('Paciente não encontrado');
+        return patientByCpf;
+    }
+    if (susError) throw new Error('Paciente não encontrado');
+    return patientBySus;
+};
+
+export const subscribeToProntuarioChanges = (patientId: string | null, callback: (payload: any) => void) => {
     const channel = supabase
         .channel('prontuarios')
-        .on(
-            'postgres_changes',
+        .on('postgres_changes',
             {
                 event: '*',
                 schema: 'public',
                 table: 'prontuarios',
-                ...(patientId ? { filter: `patient_id=eq.${patientId}` } : {}), // Filtra por patient_id, se fornecido
-            },
-            (payload: any) => {
-                console.log('Change received!', payload);
-                callback(payload);
-            }
-        )
-        .subscribe((status: any) => {
-            console.log('Subscription status:', status);
-            if (status === 'SUBSCRIBED') {
-                console.log(`Successfully subscribed to prontuarios${patientId ? ` for patient ${patientId}` : ''}`);
-            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                console.error('Subscription failed or closed:', status);
-            }
-        });
+                filter: patientId ? `patient_id=eq.${patientId}` : undefined
+            }, callback)
+        .subscribe();
+    return () => supabase.removeChannel(channel);
+};
 
-    return () => {
-        supabase.removeChannel(channel);
-        console.log('Unsubscribed from prontuarios');
-    };
+export const updateProntuario = async (patientId: string, historyUpdate: Record<string, any>) => {
+    const { data: existing, error: fetchError } = await supabase
+        .from('prontuarios')
+        .select('*')
+        .eq('patient_id', patientId)
+        .single();
+
+    const updatedHistory = existing ? { ...existing.history, ...historyUpdate } : historyUpdate;
+    const { data, error } = await supabase
+        .from('prontuarios')
+        .upsert({ patient_id: patientId, history: updatedHistory })
+        .select()
+        .single();
+    if (error || fetchError) throw new Error(error?.message || fetchError?.message);
+    return data;
 };

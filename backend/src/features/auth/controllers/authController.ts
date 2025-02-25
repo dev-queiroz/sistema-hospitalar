@@ -20,6 +20,16 @@ export const HandlerRegisterProfessional = async (req: Request, res: Response) =
     }
 };
 
+export const HandlerRegisterAdmin = async (req: Request, res: Response) => {
+    try {
+        if (req.user?.role !== 'admin') throw new Error('Acesso negado');
+        const admin = await authService.registerAdmin(req.body);
+        res.status(201).json(admin);
+    } catch (error) {
+        handleError(res, 403, (error as Error).message);
+    }
+};
+
 export const HandlerLogin = async (req: Request, res: Response) => {
     try {
         const { user, token } = await authService.login(req.body);

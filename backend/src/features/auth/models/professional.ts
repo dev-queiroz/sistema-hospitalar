@@ -1,5 +1,7 @@
 export interface Professional {
     id?: string;
+    email: string
+    password: string;
     nome: string;
     crm_coren: string;
     especializacao: string;

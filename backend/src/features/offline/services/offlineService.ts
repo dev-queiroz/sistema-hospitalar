@@ -1,27 +1,20 @@
 import { createClient } from 'redis';
 import { supabase } from '../../../config/supabase';
+import { Request, Response, NextFunction } from 'express';
 
 const redisClient = createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
-    socket: {
-        reconnectStrategy: (retries) => {
-            if (retries > 10) {
-                return new Error('Max retries reached');
-            }
-            return 500;
-        },
-    },
+    socket: { reconnectStrategy: (retries) => (retries > 10 ? new Error('Max retries') : 500) },
 });
 
-redisClient.on('error', (err) => console.error('Redis Client Error:', err));
+redisClient.on('error', (err) => console.error('Redis Error:', err));
 
 export const saveOffline = async (table: string, data: any) => {
     try {
         await redisClient.connect();
         await redisClient.lPush(`offline:${table}`, JSON.stringify(data));
-        console.log(`Saved offline to ${table}:`, data);
     } catch (error) {
-        console.error('Error saving offline:', error);
+        console.error('Erro ao salvar offline:', error);
         throw error;
     } finally {
         await redisClient.disconnect();
@@ -37,18 +30,26 @@ export const syncOffline = async () => {
             if (data.length > 0) {
                 for (const item of data) {
                     const parsed = JSON.parse(item);
-                    await supabase.from(table).insert(parsed).then(
-                        () => console.log(`Synchronized ${table}:`, parsed),
-                        (err: Error | any) => console.error(`Error syncing ${table}:`, err)
-                    );
+                    await supabase.from(table).insert(parsed);
                 }
                 await redisClient.del(`offline:${table}`);
             }
         }
     } catch (error) {
-        console.error('Error syncing offline:', error);
+        console.error('Erro ao sincronizar:', error);
         throw error;
     } finally {
         await redisClient.disconnect();
+    }
+};
+
+// Middleware para tentar online primeiro, offline em falha
+export const offlineMiddleware = (table: string) => async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await supabase.from(table).select('id').limit(1); // Testa conexão
+        next();
+    } catch (error) {
+        await saveOffline(table, req.body);
+        res.status(202).json({ message: 'Salvo offline, será sincronizado ao reconectar' });
     }
 };

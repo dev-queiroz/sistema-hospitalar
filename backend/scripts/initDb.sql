@@ -1,12 +1,13 @@
--- Tabela patients
 CREATE TABLE patients (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   sus_number VARCHAR(15) UNIQUE NOT NULL,
+  rg VARCHAR(20),
+  cpf VARCHAR(11) UNIQUE NOT NULL,
   nome VARCHAR(255) NOT NULL,
   data_nasc DATE NOT NULL,
-  endereco TEXT,
-  contato VARCHAR(20)
+  endereco TEXT NOT NULL,
+  contato VARCHAR(20) NOT NULL
 );
 
 -- Tabela professionals
