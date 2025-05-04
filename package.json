@@ -1,0 +1,46 @@
+{
+  "name": "sistema-hospitalar",
+  "version": "1.0.0",
+  "description": "Sistema Hospitalar de nível municipal baseado na arquitetura MVC (Model-View-Controller)",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-queiroz/sistema-hospitalar.git"
+  },
+  "keywords": [
+    "hospitalar",
+    "system",
+    "hospital",
+    "health"
+  ],
+  "author": "Douglas Vinícios dos Santos Queiroz",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dev-queiroz/sistema-hospitalar/issues"
+  },
+  "homepage": "https://github.com/dev-queiroz/sistema-hospitalar#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "bcrypt": "^5.1.1",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "puppeteer": "^24.8.0",
+    "qrcode": "^1.5.4",
+    "uuid": "^11.1.0",
+    "validator": "^13.15.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/puppeteer": "^5.4.7",
+    "@types/qrcode": "^1.5.5",
+    "@types/uuid": "^10.0.0",
+    "@types/validator": "^13.15.0"
+  }
+}
