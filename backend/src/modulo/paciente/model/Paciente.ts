@@ -1,12 +1,31 @@
-import {Endereco} from '../../../shared/types/endereco.ts';
+import {NivelGravidade} from "../../../shared/types/types";
 
-export class Paciente {
-    private readonly id?: string;
-    protected sus_number: number;
-    private rg?: number;
-    private cpf: cpf;
-    public nome: string;
-    public data_nasc: string;
-    public endereco: Endereco;
-    public telefone: string;
+class Paciente extends BaseEntity {
+    nome: string;
+    cpf: string;
+    cns: string; // Cartão Nacional de Saúde
+    dataNascimento: Date;
+    nivelGravidade?: NivelGravidade;
+    gruposRisco: string[]; // Ex.: "IDOSO", "GESTANTE"
+    prontuarios: Prontuario[] = [];
+    prescricoes: Prescricao[] = [];
+    consultas: Consulta[] = [];
+    internacoes: Internacao[] = [];
+    funcionarioId?: string; // Se é funcionário
+
+    constructor(
+        id: string,
+        nome: string,
+        cpf: string,
+        cns: string,
+        dataNascimento: Date,
+        gruposRisco: string[]
+    ) {
+        super(id);
+        this.nome = nome;
+        this.cpf = cpf;
+        this.cns = cns;
+        this.dataNascimento = dataNascimento;
+        this.gruposRisco = gruposRisco;
+    }
 }
