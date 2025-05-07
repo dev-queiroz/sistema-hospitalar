@@ -91,9 +91,9 @@ listarPorMedico(medicoId)
 atualizarConsulta(id,updates)
 cancelarConsulta(id)
 
-8. ProntuarioService
+8. QuartoService
 Para que serve: gerenciamento de prontuários (anamnese, exames, prescrições, atestados, solicitações).
-Models: Prontuario
+Models: Quarto
 Services usados: PacienteService
 Funções:
 

@@ -7,7 +7,7 @@ EnfermeiroService, MedicoService, FarmaceuticoService
 PacienteService
 AuthService
 ConsultaService
-ProntuarioService
+QuartoService
 PrescricaoService
 MedicamentoService
 ItemPrescricaoService
