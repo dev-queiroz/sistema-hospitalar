@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {Escolaridade, RacaCor, Sexo, TipoUnidadeSaude} from './core/model/Enums';
+import {TipoUnidadeSaude} from './core/model/Enums';
 
 // Validações reutilizáveis
 const CpfSchema = z.string().regex(/^\d{11}$/, 'CPF deve ter 11 dígitos');
@@ -37,23 +37,25 @@ export const UpdateUnidadeSaudeDTO = CreateUnidadeSaudeDTO.partial();
 // 2. Paciente DTOs
 export const CreatePacienteDTO = z.object({
     nome: z.string().min(1, 'Nome é obrigatório'),
-    cpf: CpfSchema,
-    cns: CnsSchema,
+    cpf: z.string().regex(/^\d{11}$/, 'CPF deve ter 11 dígitos'),
+    cns: z.string().regex(/^\d{15}$/, 'CNS deve ter 15 dígitos'),
     dataNascimento: z.string().transform((val) => new Date(val)).refine((val) => !isNaN(val.getTime()), 'Data de nascimento inválida'),
-    sexo: z.enum([Sexo.Masculino, Sexo.Feminino, Sexo.Outro], {
-        errorMap: () => ({message: 'Sexo inválido (MASCULINO, FEMININO, OUTRO)'}),
+    sexo: z.string().min(1, 'Sexo é obrigatório'),
+    racaCor: z.string().min(1, 'Raça/Cor é obrigatória'),
+    escolaridade: z.string().min(1, 'Escolaridade é obrigatória'),
+    endereco: z.object({
+        logradouro: z.string().min(1, 'Logradouro é obrigatório'),
+        numero: z.string().min(1, 'Número é obrigatório'),
+        complemento: z.string().optional(),
+        bairro: z.string().min(1, 'Bairro é obrigatório'),
+        cidade: z.string().min(1, 'Cidade é obrigatória'),
+        estado: z.string().min(1, 'Estado é obrigatório'),
+        cep: z.string().regex(/^\d{8}$/, 'CEP deve ter 8 dígitos'),
     }),
-    racaCor: z.enum([RacaCor.Branca, RacaCor.Preta, RacaCor.Parda, RacaCor.Amarela, RacaCor.Indigena, RacaCor.NaoDeclarado], {
-        errorMap: () => ({message: 'Raça/Cor inválida'}),
-    }),
-    escolaridade: z.enum([Escolaridade.SemEscolaridade, Escolaridade.Fundamental, Escolaridade.Medio, Escolaridade.Superior, Escolaridade.PosGraduacao], {
-        errorMap: () => ({message: 'Escolaridade inválida'}),
-    }),
-    endereco: EnderecoSchema,
-    telefone: TelefoneSchema,
-    email: EmailSchema,
-    gruposRisco: z.array(z.string()).min(1, 'Pelo menos um grupo de risco é necessário'),
+    telefone: z.string().min(1, 'Telefone é obrigatório'),
+    gruposRisco: z.array(z.string()).min(1, 'Grupos de risco são obrigatórios'),
     consentimentoLGPD: z.boolean().refine((val) => val === true, 'Consentimento LGPD é obrigatório'),
+    email: z.string().email('Email inválido').optional(),
 });
 
 export const UpdatePacienteDTO = CreatePacienteDTO.partial().extend({

@@ -4,7 +4,7 @@ import {Papeis} from '../../core/model/Enums';
 
 const supabase = supabaseClient;
 
-class LeitoService {
+export class LeitoService {
     async createLeito(numero: string, quartoId: string, adminId: string): Promise<Leito> {
         // Validações
         if (!numero || !quartoId) {

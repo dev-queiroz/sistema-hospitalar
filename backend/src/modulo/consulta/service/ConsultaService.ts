@@ -4,7 +4,7 @@ import {Papeis, TipoUnidadeSaude} from '../../core/model/Enums';
 
 const supabase = supabaseClient;
 
-class ConsultaService {
+export class ConsultaService {
     async createConsulta(
         pacienteId: string,
         profissionalId: string,
