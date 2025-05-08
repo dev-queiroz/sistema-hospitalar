@@ -24,7 +24,6 @@ export class PacienteService {
         enfermeiroId: string,
         email?: string
     ): Promise<Paciente> {
-        // Validações
         if (!nome || !cpf || !cns || !dataNascimento || !sexo || !racaCor || !escolaridade || !endereco || !telefone || !gruposRisco || consentimentoLGPD === undefined) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
@@ -46,7 +45,6 @@ export class PacienteService {
             throw new Error('Apenas ENFERMEIRO pode criar pacientes');
         }
 
-        // Verificar unicidade
         const {data: existing} = await supabase
             .from('paciente')
             .select('id')
@@ -84,12 +82,8 @@ export class PacienteService {
             .select('papel')
             .eq('id', usuarioId)
             .single();
-        const isPaciente = usuarioId === id || usuarioId === 'PACIENTE';
-        if (!usuario && !isPaciente) {
-            throw new Error('Usuário inválido');
-        }
-        if (usuario && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO && !isPaciente) {
-            throw new Error('Apenas ENFERMEIRO, MEDICO ou o próprio PACIENTE podem visualizar');
+        if (!usuario || (usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO)) {
+            throw new Error('Apenas ENFERMEIRO ou MEDICO podem visualizar pacientes');
         }
 
         const {data, error} = await supabase
@@ -152,7 +146,6 @@ export class PacienteService {
         if (consentimentoLGPD !== undefined) updates.consentimento_lgpd = consentimentoLGPD;
         if (email !== undefined) updates.email = email;
 
-        // Verificar unicidade
         if (cpf || cns) {
             const {data: existing} = await supabase
                 .from('paciente')
@@ -185,7 +178,6 @@ export class PacienteService {
             throw new Error('Apenas ENFERMEIRO pode deletar pacientes');
         }
 
-        // Validação manual de óbito (exemplo: requer motivo)
         const {data: paciente} = await supabase
             .from('paciente')
             .select('id')
@@ -208,12 +200,8 @@ export class PacienteService {
             .select('papel')
             .eq('id', usuarioId)
             .single();
-        const isPaciente = usuarioId === 'PACIENTE';
-        if (!usuario && !isPaciente) {
-            throw new Error('Usuário inválido');
-        }
-        if (usuario && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO && !isPaciente) {
-            throw new Error('Apenas ENFERMEIRO, MEDICO ou PACIENTE podem listar pacientes');
+        if (!usuario || (usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO)) {
+            throw new Error('Apenas ENFERMEIRO ou MEDICO podem listar pacientes');
         }
 
         const {data, error} = await supabase
@@ -235,12 +223,8 @@ export class PacienteService {
             .select('papel')
             .eq('id', usuarioId)
             .single();
-        const isPaciente = usuarioId === id || usuarioId === 'PACIENTE';
-        if (!usuario && !isPaciente) {
-            throw new Error('Usuário inválido');
-        }
-        if (usuario && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO && !isPaciente) {
-            throw new Error('Apenas ENFERMEIRO, MEDICO ou o próprio PACIENTE podem visualizar histórico');
+        if (!usuario || (usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO)) {
+            throw new Error('Apenas ENFERMEIRO ou MEDICO podem visualizar histórico');
         }
 
         const {data: paciente} = await supabase
@@ -276,10 +260,30 @@ export class PacienteService {
                 .limit(100)
                 .then(({data, error}) => {
                     if (error) throw new Error(`Erro ao buscar consultas: ${error.message}`);
-                    return data.map((d: any) => new Consulta(d.id, d.paciente_id, d.profissional_id, d.unidade_saude_id, d.observacoes, d.quarto_id, d.cid10));
+                    return data.map((d: any) => new Consulta(d.id, d.paciente_id, d.profissional_id, d.unidade_saude_id, d.observacoes, d.cid10));
                 }),
         ]);
 
         return {prontuarios, prescricoes, consultas};
+    }
+
+    async searchPacientesByCpfOrCns(cpfOrCns: string, usuarioId: string): Promise<Paciente[]> {
+        const {data: usuario} = await supabase
+            .from('funcionario')
+            .select('papel')
+            .eq('id', usuarioId)
+            .single();
+        if (!usuario || (usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.MEDICO)) {
+            throw new Error('Apenas ENFERMEIRO ou MEDICO podem buscar pacientes');
+        }
+
+        const {data, error} = await supabase
+            .from('paciente')
+            .select('*')
+            .or(`cpf.eq.${cpfOrCns},cns.eq.${cpfOrCns}`)
+            .limit(10);
+
+        if (error) throw new Error(`Erro ao buscar pacientes: ${error.message}`);
+        return data.map((d: any) => new Paciente(d.id, d.nome, d.cpf, d.cns, new Date(d.data_nascimento), d.sexo, d.raca_cor, d.escolaridade, d.endereco, d.telefone, d.grupos_risco, d.consentimento_lgpd, d.email));
     }
 }

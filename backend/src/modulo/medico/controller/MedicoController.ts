@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
 import {MedicoService} from '../service/MedicoService';
-import {CreateMedicoDTO, UpdateMedicoDTO} from '../../dtos';
+import {CreateMedicoDTO, UpdateMedicoDTO} from '../../core/dtos';
 import {z} from 'zod';
-import {Papeis} from '../../core/model/Enums';
+import {Escolaridade, Papeis, RacaCor, Sexo} from '../../core/model/Enums';
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; papel: Papeis };
@@ -15,7 +15,7 @@ export class MedicoController {
         this.medicoService = new MedicoService();
     }
 
-    async create(req: AuthenticatedRequest, res: Response) {
+    async create(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const validated = CreateMedicoDTO.parse(req.body);
             const adminId = req.user?.id;
@@ -25,9 +25,9 @@ export class MedicoController {
                 validated.cpf,
                 validated.cns,
                 validated.dataNascimento,
-                validated.sexo,
-                validated.racaCor,
-                validated.escolaridade,
+                validated.sexo as Sexo,
+                validated.racaCor as RacaCor,
+                validated.escolaridade as Escolaridade,
                 validated.endereco,
                 validated.telefone,
                 validated.email,
@@ -35,27 +35,33 @@ export class MedicoController {
                 validated.crm,
                 adminId
             );
-            return res.status(201).json(medico);
+            res.status(201).json(medico);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async get(req: AuthenticatedRequest, res: Response) {
+    async get(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const medico = await this.medicoService.getMedico(id, usuarioId);
-            if (!medico) return res.status(404).json({error: 'Médico não encontrado'});
-            return res.json(medico);
+            if (!medico) {
+                res.status(404).json({error: 'Médico não encontrado'});
+                return;
+            }
+            res.json(medico);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async update(req: AuthenticatedRequest, res: Response) {
+    async update(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const validated = UpdateMedicoDTO.parse(req.body);
@@ -68,35 +74,44 @@ export class MedicoController {
                 validated.dataContratacao,
                 adminId
             );
-            if (!medico) return res.status(404).json({error: 'Médico não encontrado'});
-            return res.json(medico);
+            if (!medico) {
+                res.status(404).json({error: 'Médico não encontrado'});
+                return;
+            }
+            res.json(medico);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async delete(req: AuthenticatedRequest, res: Response) {
+    async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
             const success = await this.medicoService.deleteMedico(id, adminId);
-            if (!success) return res.status(404).json({error: 'Médico não encontrado'});
-            return res.status(204).send();
+            if (!success) {
+                res.status(404).json({error: 'Médico não encontrado'});
+                return;
+            }
+            res.status(204).send();
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async list(req: AuthenticatedRequest, res: Response) {
+    async list(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const medicos = await this.medicoService.listMedicos(usuarioId);
-            return res.json(medicos);
+            res.json(medicos);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 }

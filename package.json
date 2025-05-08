@@ -1,6 +1,6 @@
 {
   "name": "sistema-hospitalar",
-  "version": "1.0.0",
+  "version": "0.9.9",
   "description": "Sistema Hospitalar de nível municipal baseado na arquitetura MVC (Model-View-Controller)",
   "main": "index.js",
   "scripts": {

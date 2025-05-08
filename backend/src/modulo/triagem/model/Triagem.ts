@@ -6,11 +6,10 @@ export class Triagem extends BaseEntity {
     pacienteId: string;
     enfermeiroId: string;
     unidadeSaudeId: string;
-    quartoId?: string; // Opcional, se a triagem ocorre em um quarto
     nivelGravidade: NivelGravidade;
     sinaisVitais: SinaisVitais;
     data: Date;
-    queixaPrincipal: string; // Ex.: "DOR_TORACICA"
+    queixaPrincipal: string;
 
     constructor(
         id: string,
@@ -19,14 +18,12 @@ export class Triagem extends BaseEntity {
         unidadeSaudeId: string,
         nivelGravidade: NivelGravidade,
         sinaisVitais: SinaisVitais,
-        queixaPrincipal: string,
-        quartoId?: string
+        queixaPrincipal: string
     ) {
         super(id);
         this.pacienteId = pacienteId;
         this.enfermeiroId = enfermeiroId;
         this.unidadeSaudeId = unidadeSaudeId;
-        this.quartoId = quartoId;
         this.nivelGravidade = nivelGravidade;
         this.sinaisVitais = sinaisVitais;
         this.data = new Date();

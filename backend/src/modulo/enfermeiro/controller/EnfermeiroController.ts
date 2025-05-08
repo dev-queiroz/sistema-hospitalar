@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
 import {EnfermeiroService} from '../service/EnfermeiroService';
-import {CreateEnfermeiroDTO, UpdateEnfermeiroDTO} from '../../dtos';
+import {CreateEnfermeiroDTO, UpdateEnfermeiroDTO} from '../../core/dtos';
 import {z} from 'zod';
-import {Papeis} from '../../core/model/Enums';
+import {Escolaridade, Papeis, RacaCor, Sexo} from '../../core/model/Enums';
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; papel: Papeis };
@@ -15,7 +15,7 @@ export class EnfermeiroController {
         this.enfermeiroService = new EnfermeiroService();
     }
 
-    async create(req: AuthenticatedRequest, res: Response) {
+    async create(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const validated = CreateEnfermeiroDTO.parse(req.body);
             const adminId = req.user?.id;
@@ -25,9 +25,9 @@ export class EnfermeiroController {
                 validated.cpf,
                 validated.cns,
                 validated.dataNascimento,
-                validated.sexo,
-                validated.racaCor,
-                validated.escolaridade,
+                validated.sexo as Sexo,
+                validated.racaCor as RacaCor,
+                validated.escolaridade as Escolaridade,
                 validated.endereco,
                 validated.telefone,
                 validated.email,
@@ -35,27 +35,33 @@ export class EnfermeiroController {
                 validated.coren,
                 adminId
             );
-            return res.status(201).json(enfermeiro);
+            res.status(201).json(enfermeiro);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async get(req: AuthenticatedRequest, res: Response) {
+    async get(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const enfermeiro = await this.enfermeiroService.getEnfermeiro(id, usuarioId);
-            if (!enfermeiro) return res.status(404).json({error: 'Enfermeiro não encontrado'});
-            return res.json(enfermeiro);
+            if (!enfermeiro) {
+                res.status(404).json({error: 'Enfermeiro não encontrado'});
+                return;
+            }
+            res.json(enfermeiro);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async update(req: AuthenticatedRequest, res: Response) {
+    async update(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const validated = UpdateEnfermeiroDTO.parse(req.body);
@@ -68,35 +74,44 @@ export class EnfermeiroController {
                 validated.dataContratacao,
                 adminId
             );
-            if (!enfermeiro) return res.status(404).json({error: 'Enfermeiro não encontrado'});
-            return res.json(enfermeiro);
+            if (!enfermeiro) {
+                res.status(404).json({error: 'Enfermeiro não encontrado'});
+                return;
+            }
+            res.json(enfermeiro);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async delete(req: AuthenticatedRequest, res: Response) {
+    async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
             const success = await this.enfermeiroService.deleteEnfermeiro(id, adminId);
-            if (!success) return res.status(404).json({error: 'Enfermeiro não encontrado'});
-            return res.status(204).send();
+            if (!success) {
+                res.status(404).json({error: 'Enfermeiro não encontrado'});
+                return;
+            }
+            res.status(204).send();
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async list(req: AuthenticatedRequest, res: Response) {
+    async list(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const enfermeiros = await this.enfermeiroService.listEnfermeiros(usuarioId);
-            return res.json(enfermeiros);
+            res.json(enfermeiros);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 }

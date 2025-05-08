@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import {UnidadeSaudeService} from '../service/UnidadeSaudeService';
-import {CreateUnidadeSaudeDTO, UpdateUnidadeSaudeDTO} from '../../dtos';
+import {CreateUnidadeSaudeDTO, UpdateUnidadeSaudeDTO} from '../../core/dtos';
 import {z} from 'zod';
 import {Papeis} from '../../core/model/Enums';
 
@@ -15,7 +15,7 @@ export class UnidadeSaudeController {
         this.unidadeSaudeService = new UnidadeSaudeService();
     }
 
-    async create(req: AuthenticatedRequest, res: Response) {
+    async create(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const validated = CreateUnidadeSaudeDTO.parse(req.body);
             const adminId = req.user?.id;
@@ -30,27 +30,33 @@ export class UnidadeSaudeController {
                 validated.servicosAmpliados ?? [],
                 adminId
             );
-            return res.status(201).json(unidade);
+            res.status(201).json(unidade);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async get(req: AuthenticatedRequest, res: Response) {
+    async get(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const unidade = await this.unidadeSaudeService.getUnidadeSaude(id, usuarioId);
-            if (!unidade) return res.status(404).json({error: 'Unidade de saúde não encontrada'});
-            return res.json(unidade);
+            if (!unidade) {
+                res.status(404).json({error: 'Unidade de saúde não encontrada'});
+                return;
+            }
+            res.json(unidade);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async update(req: AuthenticatedRequest, res: Response) {
+    async update(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const validated = UpdateUnidadeSaudeDTO.parse(req.body);
@@ -67,35 +73,56 @@ export class UnidadeSaudeController {
                 validated.servicosAmpliados,
                 adminId
             );
-            if (!unidade) return res.status(404).json({error: 'Unidade de saúde não encontrada'});
-            return res.json(unidade);
+            if (!unidade) {
+                res.status(404).json({error: 'Unidade de saúde não encontrada'});
+                return;
+            }
+            res.json(unidade);
         } catch (error: any) {
-            if (error instanceof z.ZodError) return res.status(400).json({errors: error.errors});
-            return res.status(400).json({error: error.message});
+            if (error instanceof z.ZodError) {
+                res.status(400).json({errors: error.errors});
+            } else {
+                res.status(400).json({error: error.message});
+            }
         }
     }
 
-    async delete(req: AuthenticatedRequest, res: Response) {
+    async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
             const success = await this.unidadeSaudeService.deleteUnidadeSaude(id, adminId);
-            if (!success) return res.status(404).json({error: 'Unidade de saúde não encontrada'});
-            return res.status(204).send();
+            if (!success) {
+                res.status(404).json({error: 'Unidade de saúde não encontrada'});
+                return;
+            }
+            res.status(204).send();
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
         }
     }
 
-    async list(req: AuthenticatedRequest, res: Response) {
+    async list(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             const unidades = await this.unidadeSaudeService.listUnidadesSaude(usuarioId);
-            return res.json(unidades);
+            res.json(unidades);
         } catch (error: any) {
-            return res.status(400).json({error: error.message});
+            res.status(400).json({error: error.message});
+        }
+    }
+
+    async listFuncionariosByUnidade(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const unidadeSaudeId = req.params.unidadeSaudeId;
+            const adminId = req.user?.id;
+            if (!adminId) throw new Error('ID do administrador não encontrado');
+            const funcionarios = await this.unidadeSaudeService.listFuncionariosByUnidade(unidadeSaudeId, adminId);
+            res.json(funcionarios);
+        } catch (error: any) {
+            res.status(400).json({error: error.message});
         }
     }
 }
