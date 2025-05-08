@@ -18,8 +18,34 @@ enum Papeis {
     MEDICO = "MEDICO",                                   // Consultas, prescrições
 }
 
+enum Sexo {
+    Masculino = "MASCULINO",
+    Feminino = "FEMININO",
+    Outro = "OUTRO",
+}
+
+enum RacaCor {
+    Branca = "BRANCA",
+    Preta = "PRETA",
+    Parda = "PARDA",
+    Amarela = "AMARELA",
+    Indigena = "INDIGENA",
+    NaoDeclarado = "NAO_DECLARADO",
+}
+
+enum Escolaridade {
+    SemEscolaridade = "SEM_ESCOLARIDADE",
+    Fundamental = "FUNDAMENTAL",
+    Medio = "MEDIO",
+    Superior = "SUPERIOR",
+    PosGraduacao = "POS_GRADUACAO",
+}
+
 export {
     NivelGravidade,
     TipoUnidadeSaude,
-    Papeis
+    Papeis,
+    Sexo,
+    RacaCor,
+    Escolaridade
 }
