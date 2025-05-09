@@ -1,9 +1,9 @@
 import {createClient} from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import path from 'path';
 
-dotenv.config({path: path.resolve(__dirname, '../../../../.env')});
+dotenv.config();
 
+// Verifica se as variáveis de ambiente estão definidas
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
     throw new Error('SUPABASE_URL e SUPABASE_KEY devem ser definidos no .env');
 }

@@ -7,7 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
-    "outDir": "./backend/dist",
+    "outDir": "./dist",
     "rootDir": "./backend/src",
     "moduleResolution": "node",
     "resolveJsonModule": true
@@ -17,6 +17,6 @@
   ],
   "exclude": [
     "node_modules",
-    "backend/dist"
+    "dist"
   ]
 }
