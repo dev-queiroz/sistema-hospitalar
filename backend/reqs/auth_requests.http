@@ -25,7 +25,7 @@ Content-Type: application/json
   "adminSecret": "SuperSecretAdmin123"
 }
 
-### Login de administrador
+### Login de todos (admins, enfermeiros e médicos)
 # @name loginAdmin
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
@@ -48,7 +48,7 @@ Content-Type: application/json
   "refresh_token": "tiq3vcaawtqz"
 }
 
-### Registrar enfermeiro
+### Desativar funcionário (admins, enfermeiros e médicos)
 # @name deactivateEmployee
 POST http://localhost:3000/api/auth/deactivate/{{enfermeiroId}}
 Content-Type: application/json

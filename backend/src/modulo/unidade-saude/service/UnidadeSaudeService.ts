@@ -47,7 +47,12 @@ export class UnidadeSaudeService {
                 nome,
                 tipo,
                 cnes,
-                endereco,
+                endereco_logradouro: endereco.logradouro,
+                endereco_numero: endereco.numero,
+                endereco_bairro: endereco.bairro,
+                endereco_cidade: endereco.cidade,
+                endereco_estado: endereco.estado,
+                endereco_cep: endereco.cep,
                 telefone,
                 servicos_essenciais: servicosEssenciais,
                 servicos_ampliados: servicosAmpliados,
@@ -76,7 +81,15 @@ export class UnidadeSaudeService {
             .single();
 
         if (error || !data) return null;
-        return new UnidadeSaude(data.id, data.nome, data.tipo, data.cnes, data.endereco, data.telefone, data.servicos_essenciais, data.servicos_ampliados);
+        const enderecoReturn: Endereco = {
+            logradouro: data.endereco_logradouro,
+            numero: data.endereco_numero,
+            bairro: data.endereco_bairro,
+            cidade: data.endereco_cidade,
+            estado: data.endereco_estado,
+            cep: data.endereco_cep
+        };
+        return new UnidadeSaude(data.id, data.nome, data.tipo, data.cnes, enderecoReturn, data.telefone, data.servicos_essenciais, data.servicos_ampliados);
     }
 
     async listUnidadesSaude(adminId: string): Promise<Array<UnidadeSaude>> {
@@ -94,7 +107,17 @@ export class UnidadeSaudeService {
             .select('*');
 
         if (error) throw new Error(`Erro ao listar unidades: ${error.message}`);
-        return data.map((d: any) => new UnidadeSaude(d.id, d.nome, d.tipo, d.cnes, d.endereco, d.telefone, d.servicos_essenciais, d.servicos_ampliados));
+        return data.map((d: any) => {
+            const endereco: Endereco = {
+                logradouro: d.endereco_logradouro,
+                numero: d.endereco_numero,
+                bairro: d.endereco_bairro,
+                cidade: d.endereco_cidade,
+                estado: d.endereco_estado,
+                cep: d.endereco_cep
+            };
+            return new UnidadeSaude(d.id, d.nome, d.tipo, d.cnes, endereco, d.telefone, d.servicos_essenciais, d.servicos_ampliados);
+        });
     }
 
     async updateUnidadeSaude(
@@ -126,7 +149,14 @@ export class UnidadeSaudeService {
         if (nome) updates.nome = nome;
         if (tipo) updates.tipo = tipo;
         if (cnes) updates.cnes = cnes;
-        if (endereco) updates.endereco = endereco;
+        if (endereco) {
+            updates.endereco_logradouro = endereco.logradouro;
+            updates.endereco_numero = endereco.numero;
+            updates.endereco_bairro = endereco.bairro;
+            updates.endereco_cidade = endereco.cidade;
+            updates.endereco_estado = endereco.estado;
+            updates.endereco_cep = endereco.cep;
+        }
         if (telefone) updates.telefone = telefone;
         if (servicosEssenciais) updates.servicos_essenciais = servicosEssenciais;
         if (servicosAmpliados) updates.servicos_ampliados = servicosAmpliados;
@@ -142,6 +172,16 @@ export class UnidadeSaudeService {
             }
         }
 
+        const {data: existingUnit} = await supabase
+            .from('unidade_saude')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (!existingUnit) {
+            throw new Error('Unidade de saúde não encontrada');
+        }
+
         const {data, error} = await supabase
             .from('unidade_saude')
             .update(updates)
@@ -150,7 +190,15 @@ export class UnidadeSaudeService {
             .single();
 
         if (error || !data) return null;
-        return new UnidadeSaude(data.id, data.nome, data.tipo, data.cnes, data.endereco, data.telefone, data.servicos_essenciais, data.servicos_ampliados);
+        const enderecoReturn: Endereco = {
+            logradouro: data.endereco_logradouro,
+            numero: data.endereco_numero,
+            bairro: data.endereco_bairro,
+            cidade: data.endereco_cidade,
+            estado: data.endereco_estado,
+            cep: data.endereco_cep
+        };
+        return new UnidadeSaude(data.id, data.nome, data.tipo, data.cnes, enderecoReturn, data.telefone, data.servicos_essenciais, data.servicos_ampliados);
     }
 
     async deleteUnidadeSaude(id: string, adminId: string): Promise<boolean> {
@@ -223,7 +271,7 @@ export class UnidadeSaudeService {
 
         const {data, error} = await supabase
             .from('funcionario')
-            .select('id, nome, papel, crm, coren, data_contratacao, cpf, cns, data_nascimento, sexo, raca_cor, escolaridade, endereco, telefone, email')
+            .select('id, nome, papel, crm, coren, data_contratacao, cpf, cns, data_nascimento, sexo, raca_cor, escolaridade, endereco_logradouro, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_cep, telefone, email')
             .in('id', funcionarioIds)
             .limit(100);
 
@@ -240,7 +288,14 @@ export class UnidadeSaudeService {
                     d.sexo,
                     d.raca_cor,
                     d.escolaridade,
-                    d.endereco,
+                    {
+                        logradouro: d.endereco_logradouro,
+                        numero: d.endereco_numero,
+                        bairro: d.endereco_bairro,
+                        cidade: d.endereco_cidade,
+                        estado: d.endereco_estado,
+                        cep: d.endereco_cep
+                    },
                     d.telefone,
                     d.grupos_risco,
                     d.consentimento_lgpd,
@@ -258,7 +313,14 @@ export class UnidadeSaudeService {
                     d.sexo,
                     d.raca_cor,
                     d.escolaridade,
-                    d.endereco,
+                    {
+                        logradouro: d.endereco_logradouro,
+                        numero: d.endereco_numero,
+                        bairro: d.endereco_bairro,
+                        cidade: d.endereco_cidade,
+                        estado: d.endereco_estado,
+                        cep: d.endereco_cep
+                    },
                     d.telefone,
                     d.grupos_risco,
                     d.consentimento_lgpd,
