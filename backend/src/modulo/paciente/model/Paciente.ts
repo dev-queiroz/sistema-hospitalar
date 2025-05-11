@@ -1,5 +1,5 @@
 import {BaseEntity} from '../../core/model/BaseEntity';
-import {Escolaridade, NivelGravidade, RacaCor, Sexo} from '../../core/model/Enums';
+import {Escolaridade, RacaCor, Sexo} from '../../core/model/Enums';
 import {Endereco} from '../../core/model/Interfaces';
 import {Prontuario} from '../../prontuario/model/Prontuario';
 import {Prescricao} from '../../prescricao/model/Prescricao';
@@ -17,7 +17,6 @@ export class Paciente extends BaseEntity {
     telefone: string;
     email?: string;
     gruposRisco: string[]; // Ex.: "IDOSO", "GESTANTE", "DIABETICO"
-    nivelGravidade?: NivelGravidade;
     consentimentoLGPD: boolean; // Consentimento para dados pessoais
     prontuarios: Prontuario[] = [];
     prescricoes: Prescricao[] = [];

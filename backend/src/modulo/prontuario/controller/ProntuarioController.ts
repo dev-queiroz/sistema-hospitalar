@@ -1,10 +1,11 @@
 import {Request, Response} from 'express';
 import {ProntuarioService} from '../service/ProntuarioService';
-import {CreateProntuarioDTO} from '../../core/dtos';
+import {PacienteService} from '../../paciente/service/PacienteService';
+import {TriagemService} from '../../triagem/service/TriagemService';
+import {CreateProntuarioDTO, UpdateProntuarioDTO} from '../../core/dtos';
 import {z} from 'zod';
 import {Papeis} from '../../core/model/Enums';
 import {supabaseClient} from '../../../shared/database/supabase';
-import {TriagemService} from '../../triagem/service/TriagemService';
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; papel: Papeis };
@@ -12,10 +13,12 @@ interface AuthenticatedRequest extends Request {
 
 export class ProntuarioController {
     private prontuarioService: ProntuarioService;
+    private pacienteService: PacienteService;
     private triagemService: TriagemService;
 
     constructor() {
         this.prontuarioService = new ProntuarioService();
+        this.pacienteService = new PacienteService();
         this.triagemService = new TriagemService();
     }
 
@@ -24,13 +27,20 @@ export class ProntuarioController {
             const validated = CreateProntuarioDTO.parse(req.body);
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prontuario = await this.prontuarioService.createProntuario(
+
+            const {data, error} = await this.prontuarioService.createProntuario(
                 validated.pacienteId,
-                validated.profissionalId,
+                usuarioId,
+                validated.unidadeSaudeId,
                 validated.descricao,
                 validated.dadosAnonimizados
             );
-            res.status(201).json(prontuario);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar prontuário'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -45,12 +55,13 @@ export class ProntuarioController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prontuario = await this.prontuarioService.getProntuario(id, usuarioId);
-            if (!prontuario) {
-                res.status(404).json({error: 'Prontuário não encontrado'});
+
+            const {data, error} = await this.prontuarioService.getProntuario(id, usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Prontuário não encontrado'});
                 return;
             }
-            res.json(prontuario);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -61,8 +72,13 @@ export class ProntuarioController {
             const pacienteId = req.params.pacienteId;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prontuarios = await this.prontuarioService.listProntuariosByPaciente(pacienteId, usuarioId);
-            res.json(prontuarios);
+
+            const {data, error} = await this.prontuarioService.listProntuariosByPaciente(pacienteId, usuarioId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -71,20 +87,21 @@ export class ProntuarioController {
     async update(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
-            const validated = CreateProntuarioDTO.parse(req.body);
+            const validated = UpdateProntuarioDTO.parse(req.body);
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prontuario = await this.prontuarioService.updateProntuario(
+
+            const {data, error} = await this.prontuarioService.updateProntuario(
                 id,
                 validated.descricao,
                 validated.dadosAnonimizados,
                 usuarioId
             );
-            if (!prontuario) {
-                res.status(404).json({error: 'Prontuário não encontrado'});
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Prontuário não encontrado'});
                 return;
             }
-            res.json(prontuario);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -94,45 +111,98 @@ export class ProntuarioController {
         }
     }
 
+    async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const id = req.params.id;
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.prontuarioService.deleteProntuario(id, usuarioId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar prontuário'});
+                return;
+            }
+            res.status(204).send();
+        } catch (error: any) {
+            res.status(400).json({error: error.message});
+        }
+    }
+
     async generatePDF(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prontuario = await this.prontuarioService.getProntuario(id, usuarioId);
-            if (!prontuario) {
-                res.status(404).json({error: 'Prontuário não encontrado'});
+
+            const {
+                data: prontuario,
+                error: prontuarioError
+            } = await this.prontuarioService.getProntuario(id, usuarioId);
+            if (prontuarioError || !prontuario) {
+                res.status(404).json({error: prontuarioError?.message || 'Prontuário não encontrado'});
                 return;
             }
 
-            const {data: paciente} = await supabaseClient
-                .from('paciente')
-                .select('nome, cpf, cns')
-                .eq('id', prontuario.pacienteId)
-                .single();
-            if (!paciente) {
-                res.status(400).json({error: 'Paciente não encontrado'});
+            const {
+                data: paciente,
+                error: pacienteError
+            } = await this.pacienteService.getPaciente(prontuario.pacienteId, usuarioId);
+            if (pacienteError || !paciente) {
+                res.status(400).json({error: pacienteError?.message || 'Paciente não encontrado'});
                 return;
             }
 
-            const {data: profissional} = await supabaseClient
+            const {data: profissional, error: profissionalError} = await supabaseClient
                 .from('funcionario')
-                .select('nome, crm, papel')
+                .select('nome, papel, crm')
                 .eq('id', prontuario.profissionalId)
+                .eq('ativo', true)
                 .single();
-            if (!profissional) {
-                res.status(400).json({error: 'Profissional não encontrado'});
+            if (profissionalError || !profissional) {
+                res.status(400).json({error: profissionalError?.message || 'Profissional não encontrado'});
                 return;
             }
 
-            const triagens = await this.triagemService.listTriagensByPaciente(prontuario.pacienteId, usuarioId);
+            const {data: unidade, error: unidadeError} = await supabaseClient
+                .from('unidade_saude')
+                .select('nome')
+                .eq('id', prontuario.unidadeSaudeId)
+                .single();
+            if (unidadeError || !unidade) {
+                res.status(400).json({error: unidadeError?.message || 'Unidade de saúde não encontrada'});
+                return;
+            }
+
+            const {
+                data: triagens,
+                error: triagemError
+            } = await this.triagemService.listTriagensByPaciente(prontuario.pacienteId);
+            if (triagemError) {
+                res.status(400).json({error: triagemError.message});
+                return;
+            }
+
+            // Escapar caracteres especiais para LaTeX
+            const escapeLatex = (str: string) => {
+                const replacements: { [key: string]: string } = {
+                    '&': '\\&',
+                    '%': '\\%',
+                    '$': '\\$',
+                    '#': '\\#',
+                    '_': '\\_',
+                    '{': '\\{',
+                    '}': '\\}',
+                    '~': '\\textasciitilde{}',
+                    '^': '\\textasciicircum{}',
+                    '\\': '\\textbackslash{}',
+                };
+                return str.replace(/[&%$#_{}~^\\]/g, (match) => replacements[match]);
+            };
+
             const triagemContent = triagens.length > 0
                 ? triagens
-                    .map(
-                        (t) =>
-                            `\\item[${new Date(t.createdAt).toLocaleDateString('pt-BR')}]: ${
-                                t.queixaPrincipal
-                            } (Gravidade: ${t.nivelGravidade})`
+                    .map((t) =>
+                        `\\item[${new Date(t.createdAt).toLocaleDateString('pt-BR')}]: ${escapeLatex(t.queixaPrincipal)} (Gravidade: ${t.nivelGravidade})`
                     )
                     .join('')
                 : 'Nenhuma triagem registrada.';
@@ -152,17 +222,18 @@ export class ProntuarioController {
 \\section*{Prontuário Médico}
 
 \\begin{description}
-    \\item[Paciente:] ${paciente.nome}
+    \\item[Paciente:] ${escapeLatex(paciente.nome)}
     \\item[CPF:] ${paciente.cpf}
     \\item[CNS:] ${paciente.cns}
-    \\item[Profissional:] ${profissional.nome} (${
+    \\item[Profissional:] ${escapeLatex(profissional.nome)} (${
                 profissional.papel === Papeis.MEDICO ? 'CRM: ' + (profissional.crm || 'N/A') : 'Enfermeiro'
             })
+    \\item[Unidade de Saúde:] ${escapeLatex(unidade.nome)}
     \\item[Data:] \\today
 \\end{description}
 
 \\section*{Descrição}
-${prontuario.descricao.replace(/\n/g, '\\\\')}
+${escapeLatex(prontuario.descricao).replace(/\n/g, '\\\\')}
 
 \\section*{Triagens Associadas}
 \\begin{itemize}
@@ -170,7 +241,7 @@ ${triagemContent}
 \\end{itemize}
 
 \\end{document}
-            `;
+      `;
 
             res.status(200).json({latex: latexContent});
         } catch (error: any) {

@@ -20,22 +20,30 @@ export class MedicoController {
             const validated = CreateMedicoDTO.parse(req.body);
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const medico = await this.medicoService.createMedico(
+
+            const {data, error} = await this.medicoService.createMedico(
                 validated.nome,
                 validated.cpf,
                 validated.cns,
-                validated.dataNascimento,
+                new Date(validated.dataNascimento),
                 validated.sexo as Sexo,
                 validated.racaCor as RacaCor,
                 validated.escolaridade as Escolaridade,
                 validated.endereco,
                 validated.telefone,
-                validated.email,
-                validated.dataContratacao,
+                validated.email!,
+                validated.senha,
+                new Date(validated.dataContratacao),
                 validated.crm,
-                adminId
+                adminId,
+                validated.unidadeSaudeId
             );
-            res.status(201).json(medico);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar médico'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -50,12 +58,13 @@ export class MedicoController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const medico = await this.medicoService.getMedico(id, usuarioId);
-            if (!medico) {
-                res.status(404).json({error: 'Médico não encontrado'});
+
+            const {data, error} = await this.medicoService.getMedico(id);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Médico não encontrado'});
                 return;
             }
-            res.json(medico);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -67,18 +76,20 @@ export class MedicoController {
             const validated = UpdateMedicoDTO.parse(req.body);
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const medico = await this.medicoService.updateMedico(
+
+            const {data, error} = await this.medicoService.updateMedico(
                 id,
                 validated.nome,
                 validated.crm,
-                validated.dataContratacao,
+                validated.dataContratacao ? new Date(validated.dataContratacao) : undefined,
                 adminId
             );
-            if (!medico) {
-                res.status(404).json({error: 'Médico não encontrado'});
+
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Médico não encontrado'});
                 return;
             }
-            res.json(medico);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -93,9 +104,10 @@ export class MedicoController {
             const id = req.params.id;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const success = await this.medicoService.deleteMedico(id, adminId);
-            if (!success) {
-                res.status(404).json({error: 'Médico não encontrado'});
+
+            const {data, error} = await this.medicoService.deleteMedico(id, adminId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar médico'});
                 return;
             }
             res.status(204).send();
@@ -108,8 +120,13 @@ export class MedicoController {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const medicos = await this.medicoService.listMedicos(usuarioId);
-            res.json(medicos);
+
+            const {data, error} = await this.medicoService.listMedicos();
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }

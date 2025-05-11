@@ -6,15 +6,16 @@ export class Consulta extends BaseEntity {
     unidadeSaudeId: string;
     data: Date;
     observacoes: string;
-    cid10?: string;
+    cid10?: string | null;
 
     constructor(
         id: string,
         pacienteId: string,
         profissionalId: string,
         unidadeSaudeId: string,
+        dataConsulta: Date,
         observacoes: string,
-        cid10?: string
+        cid10?: string | null
     ) {
         super(id);
         this.pacienteId = pacienteId;

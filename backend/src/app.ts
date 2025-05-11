@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response} from 'express';
+import express, {Request, Response} from 'express';
 import cors from 'cors';
 import {router} from './modulo';
 
@@ -16,15 +16,6 @@ app.use('/api', router);
 // Rota de teste
 app.get('/', (req: Request, res: Response) => {
     res.json({message: 'API do Sistema Hospitalar está rodando!'});
-});
-
-// Tratamento de erros
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({
-        error: 'Erro interno do servidor',
-        message: err.message,
-    });
 });
 
 // Inicia servidor

@@ -18,13 +18,14 @@ export class PacienteController {
     async create(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const validated = CreatePacienteDTO.parse(req.body);
-            const enfermeiroId = req.user?.id;
-            if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const paciente = await this.pacienteService.createPaciente(
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.pacienteService.createPaciente(
                 validated.nome,
                 validated.cpf,
                 validated.cns,
-                validated.dataNascimento,
+                new Date(validated.dataNascimento),
                 validated.sexo as Sexo,
                 validated.racaCor as RacaCor,
                 validated.escolaridade as Escolaridade,
@@ -32,10 +33,16 @@ export class PacienteController {
                 validated.telefone,
                 validated.gruposRisco,
                 validated.consentimentoLGPD,
-                enfermeiroId,
-                validated.email
+                usuarioId,
+                validated.email,
+                validated.unidadeSaudeId
             );
-            res.status(201).json(paciente);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar paciente'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -50,12 +57,13 @@ export class PacienteController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const paciente = await this.pacienteService.getPaciente(id, usuarioId);
-            if (!paciente) {
-                res.status(404).json({error: 'Paciente não encontrado'});
+
+            const {data, error} = await this.pacienteService.getPaciente(id, usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Paciente não encontrado'});
                 return;
             }
-            res.json(paciente);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -65,14 +73,15 @@ export class PacienteController {
         try {
             const id = req.params.id;
             const validated = UpdatePacienteDTO.parse(req.body);
-            const enfermeiroId = req.user?.id;
-            if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const paciente = await this.pacienteService.updatePaciente(
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.pacienteService.updatePaciente(
                 id,
                 validated.nome,
                 validated.cpf,
                 validated.cns,
-                validated.dataNascimento,
+                validated.dataNascimento ? new Date(validated.dataNascimento) : undefined,
                 validated.sexo as Sexo,
                 validated.racaCor as RacaCor,
                 validated.escolaridade as Escolaridade,
@@ -80,14 +89,16 @@ export class PacienteController {
                 validated.telefone,
                 validated.gruposRisco,
                 validated.consentimentoLGPD,
-                enfermeiroId,
-                validated.email
+                usuarioId,
+                validated.email,
+                validated.unidadeSaudeId
             );
-            if (!paciente) {
-                res.status(404).json({error: 'Paciente não encontrado'});
+
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Paciente não encontrado'});
                 return;
             }
-            res.json(paciente);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -100,11 +111,12 @@ export class PacienteController {
     async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
-            const enfermeiroId = req.user?.id;
-            if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const success = await this.pacienteService.deletePaciente(id, enfermeiroId);
-            if (!success) {
-                res.status(404).json({error: 'Paciente não encontrado'});
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.pacienteService.deletePaciente(id, usuarioId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar paciente'});
                 return;
             }
             res.status(204).send();
@@ -117,8 +129,13 @@ export class PacienteController {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const pacientes = await this.pacienteService.listPacientes(usuarioId);
-            res.json(pacientes);
+
+            const {data, error} = await this.pacienteService.listPacientes(usuarioId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -129,25 +146,13 @@ export class PacienteController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const historico = await this.pacienteService.getPacienteHistorico(id, usuarioId);
-            if (!historico) {
-                res.status(404).json({error: 'Histórico não encontrado'});
+
+            const {data, error} = await this.pacienteService.getPacienteHistorico(id, usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Histórico não encontrado'});
                 return;
             }
-            res.json(historico);
-        } catch (error: any) {
-            res.status(400).json({error: error.message});
-        }
-    }
-
-    async search(req: AuthenticatedRequest, res: Response): Promise<void> {
-        try {
-            const {cpfOrCns} = req.query;
-            const usuarioId = req.user?.id;
-            if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            if (typeof cpfOrCns !== 'string') throw new Error('cpfOrCns deve ser uma string');
-            const pacientes = await this.pacienteService.searchPacientesByCpfOrCns(cpfOrCns, usuarioId);
-            res.json(pacientes);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }

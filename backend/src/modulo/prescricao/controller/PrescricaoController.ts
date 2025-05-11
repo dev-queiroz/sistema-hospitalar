@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import {PrescricaoService} from '../service/PrescricaoService';
-import {CreatePrescricaoDTO} from '../../core/dtos';
+import {CreatePrescricaoDTO, UpdatePrescricaoDTO} from '../../core/dtos';
 import {z} from 'zod';
 import {Papeis} from '../../core/model/Enums';
 import {supabaseClient} from '../../../shared/database/supabase';
@@ -21,13 +21,20 @@ export class PrescricaoController {
             const validated = CreatePrescricaoDTO.parse(req.body);
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prescricao = await this.prescricaoService.createPrescricao(
+
+            const {data, error} = await this.prescricaoService.createPrescricao(
                 validated.pacienteId,
-                validated.profissionalId,
+                usuarioId,
+                validated.unidadeSaudeId,
                 validated.detalhesPrescricao,
-                validated.cid10 ?? ''
+                validated.cid10
             );
-            res.status(201).json(prescricao);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar prescrição'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -42,13 +49,15 @@ export class PrescricaoController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prescricao = await this.prescricaoService.getPrescricao(id, usuarioId);
-            if (!prescricao) {
-                res.status(404).json({error: 'Prescrição não encontrada'});
+
+            const {data, error} = await this.prescricaoService.getPrescricao(id, usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Prescrição não encontrada'});
                 return;
             }
-            res.json(prescricao);
-        } catch (error: any) {
+            res.json(data);
+        } catch
+            (error: any) {
             res.status(400).json({error: error.message});
         }
     }
@@ -58,8 +67,13 @@ export class PrescricaoController {
             const pacienteId = req.params.pacienteId;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prescricoes = await this.prescricaoService.listPrescricoesByPaciente(pacienteId, usuarioId);
-            res.json(prescricoes);
+
+            const {data, error} = await this.prescricaoService.listPrescricoesByPaciente(pacienteId, usuarioId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -68,20 +82,19 @@ export class PrescricaoController {
     async update(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
-            const validated = CreatePrescricaoDTO.parse(req.body);
+            const validated = UpdatePrescricaoDTO.parse(req.body);
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prescricao = await this.prescricaoService.updatePrescricao(
-                id,
-                validated.detalhesPrescricao,
-                validated.cid10,
-                usuarioId
-            );
-            if (!prescricao) {
-                res.status(404).json({error: 'Prescrição não encontrada'});
+
+            const {
+                data,
+                error
+            } = await this.prescricaoService.updatePrescricao(id, validated.detalhesPrescricao, validated.cid10, usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Prescrição não encontrada'});
                 return;
             }
-            res.json(prescricao);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -91,36 +104,86 @@ export class PrescricaoController {
         }
     }
 
+    async delete(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const id = req.params.id;
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.prescricaoService.deletePrescricao(id, usuarioId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar prescrição'});
+                return;
+            }
+            res.status(204).send();
+        } catch (error: any) {
+            res.status(400).json({error: error.message});
+        }
+    }
+
     async generatePDF(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const prescricao = await this.prescricaoService.getPrescricao(id, usuarioId);
-            if (!prescricao) {
-                res.status(404).json({error: 'Prescrição não encontrada'});
+
+            const {
+                data: prescricao,
+                error: prescricaoError
+            } = await this.prescricaoService.getPrescricao(id, usuarioId);
+            if (prescricaoError || !prescricao) {
+                res.status(404).json({error: prescricaoError?.message || 'Prescrição não encontrada'});
                 return;
             }
 
-            const {data: paciente} = await supabaseClient
+            const {data: paciente, error: pacienteError} = await supabaseClient
                 .from('paciente')
                 .select('nome, cpf, cns')
                 .eq('id', prescricao.pacienteId)
+                .eq('ativo', true)
                 .single();
-            if (!paciente) {
-                res.status(400).json({error: 'Paciente não encontrado'});
+            if (pacienteError || !paciente) {
+                res.status(400).json({error: pacienteError?.message || 'Paciente não encontrado'});
                 return;
             }
 
-            const {data: profissional} = await supabaseClient
+            const {data: profissional, error: profissionalError} = await supabaseClient
                 .from('funcionario')
-                .select('nome, crm')
+                .select('nome, papel, crm')
                 .eq('id', prescricao.profissionalId)
+                .eq('ativo', true)
                 .single();
-            if (!profissional) {
-                res.status(400).json({error: 'Profissional não encontrado'});
+            if (profissionalError || !profissional) {
+                res.status(400).json({error: profissionalError?.message || 'Profissional não encontrado'});
                 return;
             }
+
+            const {data: unidade, error: unidadeError} = await supabaseClient
+                .from('unidade_saude')
+                .select('nome')
+                .eq('id', prescricao.unidadeSaudeId)
+                .single();
+            if (unidadeError || !unidade) {
+                res.status(400).json({error: unidadeError?.message || 'Unidade de saúde não encontrada'});
+                return;
+            }
+
+            // Escapar caracteres especiais para LaTeX
+            const escapeLatex = (str: string) => {
+                const replacements: { [key: string]: string } = {
+                    '&': '\\&',
+                    '%': '\\%',
+                    '$': '\\$',
+                    '#': '\\#',
+                    '_': '\\_',
+                    '{': '\\{',
+                    '}': '\\}',
+                    '~': '\\textasciitilde{}',
+                    '^': '\\textasciicircum{}',
+                    '\\': '\\textbackslash{}',
+                };
+                return str.replace(/[&%$#_{}~^\\]/g, (match) => replacements[match]);
+            };
 
             const latexContent = `
 \\documentclass[a4paper,12pt]{article}
@@ -137,19 +200,22 @@ export class PrescricaoController {
 \\section*{Prescrição Médica}
 
 \\begin{description}
-    \\item[Paciente:] ${paciente.nome}
+    \\item[Paciente:] ${escapeLatex(paciente.nome)}
     \\item[CPF:] ${paciente.cpf}
     \\item[CNS:] ${paciente.cns}
-    \\item[Profissional:] ${profissional.nome} (CRM: ${profissional.crm || 'N/A'})
+    \\item[Profissional:] ${escapeLatex(profissional.nome)} (${
+                profissional.papel === Papeis.MEDICO ? 'CRM: ' + (profissional.crm || 'N/A') : 'Enfermeiro'
+            })
+    \\item[Unidade de Saúde:] ${escapeLatex(unidade.nome)}
     \\item[Data:] \\today
-    \\item[CID-10:] ${prescricao.cid10 || 'Não informado'}
+    \\item[CID-10:] ${escapeLatex(prescricao.cid10)}
 \\end{description}
 
 \\section*{Detalhes da Prescrição}
-${prescricao.detalhesPrescricao.replace(/\n/g, '\\\\')}
+${escapeLatex(prescricao.detalhesPrescricao).replace(/\n/g, '\\\\')}
 
 \\end{document}
-            `;
+      `;
 
             res.status(200).json({latex: latexContent});
         } catch (error: any) {

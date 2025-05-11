@@ -20,22 +20,30 @@ export class EnfermeiroController {
             const validated = CreateEnfermeiroDTO.parse(req.body);
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const enfermeiro = await this.enfermeiroService.createEnfermeiro(
+
+            const {data, error} = await this.enfermeiroService.createEnfermeiro(
                 validated.nome,
                 validated.cpf,
                 validated.cns,
-                validated.dataNascimento,
+                new Date(validated.dataNascimento),
                 validated.sexo as Sexo,
                 validated.racaCor as RacaCor,
                 validated.escolaridade as Escolaridade,
                 validated.endereco,
                 validated.telefone,
                 validated.email,
-                validated.dataContratacao,
+                validated.senha,
+                new Date(validated.dataContratacao),
                 validated.coren,
-                adminId
+                adminId,
+                validated.unidadeSaudeId // Correto, pois está no DTO
             );
-            res.status(201).json(enfermeiro);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar enfermeiro'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -50,12 +58,13 @@ export class EnfermeiroController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const enfermeiro = await this.enfermeiroService.getEnfermeiro(id, usuarioId);
-            if (!enfermeiro) {
-                res.status(404).json({error: 'Enfermeiro não encontrado'});
+
+            const {data, error} = await this.enfermeiroService.getEnfermeiro(id);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Enfermeiro não encontrado'});
                 return;
             }
-            res.json(enfermeiro);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -67,18 +76,20 @@ export class EnfermeiroController {
             const validated = UpdateEnfermeiroDTO.parse(req.body);
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const enfermeiro = await this.enfermeiroService.updateEnfermeiro(
+
+            const {data, error} = await this.enfermeiroService.updateEnfermeiro(
                 id,
                 validated.nome,
                 validated.coren,
-                validated.dataContratacao,
+                validated.dataContratacao ? new Date(validated.dataContratacao) : undefined,
                 adminId
             );
-            if (!enfermeiro) {
-                res.status(404).json({error: 'Enfermeiro não encontrado'});
+
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Enfermeiro não encontrado'});
                 return;
             }
-            res.json(enfermeiro);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -93,9 +104,10 @@ export class EnfermeiroController {
             const id = req.params.id;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
-            const success = await this.enfermeiroService.deleteEnfermeiro(id, adminId);
-            if (!success) {
-                res.status(404).json({error: 'Enfermeiro não encontrado'});
+
+            const {data, error} = await this.enfermeiroService.deleteEnfermeiro(id, adminId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar enfermeiro'});
                 return;
             }
             res.status(204).send();
@@ -108,8 +120,13 @@ export class EnfermeiroController {
         try {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const enfermeiros = await this.enfermeiroService.listEnfermeiros(usuarioId);
-            res.json(enfermeiros);
+
+            const {data, error} = await this.enfermeiroService.listEnfermeiros(usuarioId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }

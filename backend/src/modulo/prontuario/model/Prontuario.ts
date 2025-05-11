@@ -1,18 +1,21 @@
-import { BaseEntity } from '../../core/model/BaseEntity';
+import {BaseEntity} from '../../core/model/BaseEntity';
 
 export class Prontuario extends BaseEntity {
     pacienteId: string;
     profissionalId: string;
+    unidadeSaudeId: string;
     data: Date;
     descricao: string;
-    dadosAnonimizados: boolean; // Para análises estatísticas
+    dadosAnonimizados: Record<string, string>;
+    criadoEm?: Date
 
     constructor(
         id: string,
         pacienteId: string,
         profissionalId: string,
+        unidadeSaudeId: string,
         descricao: string,
-        dadosAnonimizados: boolean
+        dadosAnonimizados: Record<string, string>
     ) {
         super(id);
         this.pacienteId = pacienteId;
@@ -20,5 +23,6 @@ export class Prontuario extends BaseEntity {
         this.data = new Date();
         this.descricao = descricao;
         this.dadosAnonimizados = dadosAnonimizados;
+        this.unidadeSaudeId = unidadeSaudeId;
     }
 }

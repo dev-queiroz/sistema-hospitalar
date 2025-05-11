@@ -1,0 +1,42 @@
+### Registrar um novo admin
+POST http://localhost:3000/api/auth/register-admin
+Content-Type: application/json
+
+{
+  "email": "queirozdouglas466@gmail.com",
+  "password": "Dv.23456",
+  "nome": "Douglas Queiroz",
+  "adminSecret": "SuperSecretAdmin123",
+  "cpf": "12345678901",
+  "cns": "123456789012345",
+  "dataNascimento": "1980-01-01",
+  "sexo": "MASCULINO",
+  "racaCor": "PARDA",
+  "escolaridade": "SUPERIOR",
+  "endereco": {
+    "logradouro": "Rua Admin",
+    "numero": "1",
+    "bairro": "Centro",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "12345000"
+  },
+  "telefone": "11999999999"
+}
+
+### Login universal
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "queirozdouglas466@gmail.com",
+  "password": "Dv.23456"
+}
+
+### Esqueceu a senha
+POST http://localhost:3000/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "admin@exemplo.com"
+}

@@ -20,14 +20,20 @@ export class TriagemController {
             const validated = CreateTriagemDTO.parse(req.body);
             const enfermeiroId = req.user?.id;
             if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const triagem = await this.triagemService.createTriagem(
+
+            const {data, error} = await this.triagemService.createTriagem(
                 validated.pacienteId,
                 enfermeiroId,
                 validated.unidadeSaudeId,
                 validated.sinaisVitais,
                 validated.queixaPrincipal
             );
-            res.status(201).json(triagem);
+
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao criar triagem'});
+                return;
+            }
+            res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -42,12 +48,13 @@ export class TriagemController {
             const id = req.params.id;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const triagem = await this.triagemService.getTriagem(id, usuarioId);
-            if (!triagem) {
-                res.status(404).json({error: 'Triagem não encontrada'});
+
+            const {data, error} = await this.triagemService.getTriagem(id);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Triagem não encontrada'});
                 return;
             }
-            res.json(triagem);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -58,8 +65,13 @@ export class TriagemController {
             const pacienteId = req.params.pacienteId;
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
-            const triagens = await this.triagemService.listTriagensByPaciente(pacienteId, usuarioId);
-            res.json(triagens);
+
+            const {data, error} = await this.triagemService.listTriagensByPaciente(pacienteId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -72,15 +84,18 @@ export class TriagemController {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
             if (!Object.values(NivelGravidade).includes(nivelGravidade)) {
-                res.status(400).json({error: 'Nível de gravidade inválido'});
+                throw new Error('Nível de gravidade inválido');
+            }
+
+            const {
+                data,
+                error
+            } = await this.triagemService.listPacientesByGravidade(nivelGravidade, unidadeSaudeId);
+            if (error) {
+                res.status(400).json({error: error.message});
                 return;
             }
-            const pacientes = await this.triagemService.listPacientesByGravidade(
-                nivelGravidade,
-                unidadeSaudeId,
-                usuarioId
-            );
-            res.json(pacientes);
+            res.json(data);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
@@ -92,17 +107,16 @@ export class TriagemController {
             const validated = UpdateTriagemDTO.parse(req.body);
             const enfermeiroId = req.user?.id;
             if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const triagem = await this.triagemService.updateTriagem(
-                id,
-                validated.sinaisVitais,
-                validated.queixaPrincipal,
-                enfermeiroId
-            );
-            if (!triagem) {
-                res.status(404).json({error: 'Triagem não encontrada'});
+
+            const {
+                data,
+                error
+            } = await this.triagemService.updateTriagem(id, validated.nivelGravidade, validated.sinaisVitais, validated.queixaPrincipal, enfermeiroId);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Triagem não encontrada'});
                 return;
             }
-            res.json(triagem);
+            res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 res.status(400).json({errors: error.errors});
@@ -117,9 +131,10 @@ export class TriagemController {
             const id = req.params.id;
             const enfermeiroId = req.user?.id;
             if (!enfermeiroId) throw new Error('ID do enfermeiro não encontrado');
-            const success = await this.triagemService.deleteTriagem(id, enfermeiroId);
-            if (!success) {
-                res.status(404).json({error: 'Triagem não encontrada'});
+
+            const {data, error} = await this.triagemService.deleteTriagem(id);
+            if (error || !data) {
+                res.status(400).json({error: error?.message || 'Erro ao desativar triagem'});
                 return;
             }
             res.status(204).send();

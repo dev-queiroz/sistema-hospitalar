@@ -1,0 +1,84 @@
+### Criar Enfermeiro
+POST http://localhost:3000/api/enfermeiros
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2Y2ZkZWFkNS1jMTI4LTRlMDEtYjQwMC01YWI5NzRlZTFlOGEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTg4NzQ4LCJpYXQiOjE3NDY5ODUxNDgsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNmNmZGVhZDUtYzEyOC00ZTAxLWI0MDAtNWFiOTc0ZWUxZThhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODUxNDh9XSwic2Vzc2lvbl9pZCI6Ijc0OGQyNDk1LTU5YmUtNDQzZC05YjNjLTMxZTk1YTUzNDg4OSIsImlzX2Fub255bW91cyI6ZmFsc2V9.PFiHuQ96B5SwaezfSjOWgUZGf_Zum-9EGCix5E9yYqU
+
+{
+  "nome": "João Santos",
+  "cpf": "09245682345",
+  "cns": "937203894572163",
+  "dataNascimento": "1990-08-20",
+  "sexo": "MASCULINO",
+  "racaCor": "PARDA",
+  "escolaridade": "POS_GRADUACAO",
+  "endereco": {
+    "logradouro": "Avenida Paulista",
+    "numero": "1500",
+    "bairro": "Bela Vista",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "01310000"
+  },
+  "telefone": "88996384623",
+  "email": "dev.queiroz05@gmail.com",
+  "senha": "Dv.23456",
+  "dataContratacao": "2023-03-15",
+  "coren": "974302-PB",
+  "unidadeSaudeId": "e86a55e8-f4d2-4c02-87f5-424912d097d2"
+}
+
+> {%
+    client.global.set("enfermeiro_id", response.body.id);
+%}
+
+###
+
+### Obter Enfermeiro
+GET http://localhost:3000/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2Y2ZkZWFkNS1jMTI4LTRlMDEtYjQwMC01YWI5NzRlZTFlOGEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTg4NzQ4LCJpYXQiOjE3NDY5ODUxNDgsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNmNmZGVhZDUtYzEyOC00ZTAxLWI0MDAtNWFiOTc0ZWUxZThhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODUxNDh9XSwic2Vzc2lvbl9pZCI6Ijc0OGQyNDk1LTU5YmUtNDQzZC05YjNjLTMxZTk1YTUzNDg4OSIsImlzX2Fub255bW91cyI6ZmFsc2V9.PFiHuQ96B5SwaezfSjOWgUZGf_Zum-9EGCix5E9yYqU
+
+###
+
+### Listar Enfermeiros
+GET http://localhost:3000/api/enfermeiros
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2Y2ZkZWFkNS1jMTI4LTRlMDEtYjQwMC01YWI5NzRlZTFlOGEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTg4NzQ4LCJpYXQiOjE3NDY5ODUxNDgsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNmNmZGVhZDUtYzEyOC00ZTAxLWI0MDAtNWFiOTc0ZWUxZThhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODUxNDh9XSwic2Vzc2lvbl9pZCI6Ijc0OGQyNDk1LTU5YmUtNDQzZC05YjNjLTMxZTk1YTUzNDg4OSIsImlzX2Fub255bW91cyI6ZmFsc2V9.PFiHuQ96B5SwaezfSjOWgUZGf_Zum-9EGCix5E9yYqU
+
+###
+
+### Atualizar Enfermeiro
+PUT http://localhost:3000/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2Y2ZkZWFkNS1jMTI4LTRlMDEtYjQwMC01YWI5NzRlZTFlOGEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTg4NzQ4LCJpYXQiOjE3NDY5ODUxNDgsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNmNmZGVhZDUtYzEyOC00ZTAxLWI0MDAtNWFiOTc0ZWUxZThhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODUxNDh9XSwic2Vzc2lvbl9pZCI6Ijc0OGQyNDk1LTU5YmUtNDQzZC05YjNjLTMxZTk1YTUzNDg4OSIsImlzX2Fub255bW91cyI6ZmFsc2V9.PFiHuQ96B5SwaezfSjOWgUZGf_Zum-9EGCix5E9yYqU
+
+{
+  "nome": "Maria Silva Atualizada",
+  "coren": "654321-SP",
+  "dataContratacao": "2023-02-01"
+}
+
+###
+
+### Deletar Enfermeiro
+DELETE http://localhost:3000/api/enfermeiros/{{enfermeiro_id}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2Y2ZkZWFkNS1jMTI4LTRlMDEtYjQwMC01YWI5NzRlZTFlOGEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTg4NzQ4LCJpYXQiOjE3NDY5ODUxNDgsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNmNmZGVhZDUtYzEyOC00ZTAxLWI0MDAtNWFiOTc0ZWUxZThhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODUxNDh9XSwic2Vzc2lvbl9pZCI6Ijc0OGQyNDk1LTU5YmUtNDQzZC05YjNjLTMxZTk1YTUzNDg4OSIsImlzX2Fub255bW91cyI6ZmFsc2V9.PFiHuQ96B5SwaezfSjOWgUZGf_Zum-9EGCix5E9yYqU
+
+###
+
+### Login Enfermeiro (Obter Token para Testar Rotas como Enfermeiro)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "dev.queiroz05@gmail.com",
+  "password": "Dv.23456"
+}
+
+> {%
+    client.global.set("enfermeiro_token", response.body.access_token);
+%}
+
+###
+
+### Obter Próprio Enfermeiro (como Enfermeiro)
+GET http://localhost:3000/api/enfermeiros/{{enfermeiro_id}}
+Authorization: Bearer {{enfermeiro_token}}

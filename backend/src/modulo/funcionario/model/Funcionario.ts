@@ -2,10 +2,14 @@ import {Paciente} from '../../paciente/model/Paciente';
 import {Escolaridade, Papeis, RacaCor, Sexo} from '../../core/model/Enums';
 import {Endereco} from '../../core/model/Interfaces';
 
+/**
+ * Representa um funcionário (médico ou enfermeiro) no sistema.
+ * Herda de Paciente para reutilizar atributos comuns, mas é usado exclusivamente para papéis profissionais.
+ */
 export abstract class Funcionario extends Paciente {
     papel: Papeis;
     dataContratacao: Date;
-    registroProfissional: string; // CRM, COREN
+    registroProfissional: string; // Ex.: CRM para médicos, COREN para enfermeiros
 
     constructor(
         id: string,
@@ -40,6 +44,9 @@ export abstract class Funcionario extends Paciente {
             consentimentoLGPD,
             email
         );
+        if (!['MEDICO', 'ENFERMEIRO', 'ADMINISTRADOR_PRINCIPAL'].includes(papel)) {
+            throw new Error('Papel inválido para funcionário');
+        }
         this.papel = papel;
         this.dataContratacao = dataContratacao;
         this.registroProfissional = registroProfissional;

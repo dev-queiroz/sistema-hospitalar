@@ -1,0 +1,75 @@
+### Criar Consulta (Médico)
+POST http://localhost:3000/api/consultas
+Content-Type: application/json
+Authorization: Bearer {{medico_token}}
+
+{
+    "pacienteId": "{{paciente_id}}",
+    "unidadeSaudeId": "{{unidade_saude_id}}",
+    "observacoes": "Paciente com tosse persistente e febre baixa. Prescrito antibiótico.",
+    "cid10": "J45"
+}
+
+> {%
+    client.global.set("consulta_id", response.body.id);
+%}
+
+###
+
+### Obter Consulta (Médico)
+GET http://localhost:3000/api/consultas/{{consulta_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Obter Consulta (Enfermeiro)
+GET http://localhost:3000/api/consultas/{{consulta_id}}
+Authorization: Bearer {{enfermeiro_token}}
+
+###
+
+### Listar Consultas por Paciente (Médico)
+GET http://localhost:3000/api/consultas/pacientes/{{paciente_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Listar Consultas por Paciente (Enfermeiro)
+GET http://localhost:3000/api/consultas/pacientes/{{paciente_id}}
+Authorization: Bearer {{enfermeiro_token}}
+
+###
+
+### Atualizar Consulta (Médico)
+PUT http://localhost:3000/api/consultas/{{consulta_id}}
+Content-Type: application/json
+Authorization: Bearer {{medico_token}}
+
+{
+  "observacoes": "Paciente apresentou melhora após 5 dias de antibiótico. Mantida medicação.",
+  "cid10": "J45.0"
+}
+
+###
+
+### Deletar Consulta (Médico)
+DELETE http://localhost:3000/api/consultas/{{consulta_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Listar Consultas por Profissional (Administrador)
+GET http://localhost:3000/api/consultas/profissional/{{medico_id}}
+Authorization: Bearer {{admin_token}}
+
+###
+
+### Listar Atendimentos Ativos por Unidade (Administrador)
+GET http://localhost:3000/api/consultas/unidade/{{unidade_saude_id}}/atendimentos-ativos
+Authorization: Bearer {{admin_token}}
+
+###
+
+### Listar Consultas por Unidade (Administrador)
+GET http://localhost:3000/api/consultas/unidade/{{unidade_saude_id}}
+Authorization: Bearer {{admin_token}}

@@ -1,0 +1,96 @@
+### Criar Prontuário
+POST http://localhost:3000/api/prontuarios
+Content-Type: application/json
+Authorization: Bearer {{medico_token}}
+
+{
+    "pacienteId": "{{paciente_id}}",
+    "unidadeSaudeId": "{{unidade_saude_id}}",
+    "descricao": "Paciente apresentou febre e tosse persistente. Realizado exame físico e solicitado raio-X de tórax.",
+    "dadosAnonimizados": {
+        "nome": "Paciente Anonimizado",
+        "cpf": "XXX.XXX.XXX-XX"
+    }
+}
+
+> {%
+    client.global.set("prontuario_id", response.body.id);
+%}
+
+###
+
+### Obter Prontuário
+GET http://localhost:3000/api/prontuarios/{{prontuario_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Listar Prontuários por Paciente
+GET http://localhost:3000/api/prontuarios/pacientes/{{paciente_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Atualizar Prontuário
+PUT http://localhost:3000/api/prontuarios/{{prontuario_id}}
+Content-Type: application/json
+Authorization: Bearer {{medico_token}}
+
+{
+  "descricao": "Paciente retornou com melhora dos sintomas após medicação. Raio-X normal.",
+  "dadosAnonimizados": {
+    "nome": "Paciente Anonimizado Atualizado",
+    "cpf": "XXX.XXX.XXX-XX"
+  }
+}
+
+###
+
+### Deletar Prontuário
+DELETE http://localhost:3000/api/prontuarios/{{prontuario_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Gerar PDF do Prontuário
+GET http://localhost:3000/api/prontuarios/{{prontuario_id}}/pdf
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Criar Prontuário (como Enfermeiro)
+POST http://localhost:3000/api/prontuarios
+Content-Type: application/json
+Authorization: Bearer {{enfermeiro_token}}
+
+{
+    "pacienteId": "{{paciente_id}}",
+    "unidadeSaudeId": "{{unidade_saude_id}}",
+    "descricao": "Paciente com pressão arterial elevada (140/90 mmHg). Aplicada medicação conforme prescrição.",
+    "dadosAnonimizados": {
+        "nome": "Paciente Anonimizado",
+        "cpf": "XXX.XXX.XXX-XX"
+    }
+}
+
+> {%
+    client.global.set("prontuario_id_2", response.body.id);
+%}
+
+###
+
+### Obter Prontuário (como Enfermeiro)
+GET http://localhost:3000/api/prontuarios/{{prontuario_id_2}}
+Authorization: Bearer {{enfermeiro_token}}
+
+###
+
+### Listar Prontuários por Paciente (como Enfermeiro)
+GET http://localhost:3000/api/prontuarios/pacientes/{{paciente_id}}
+Authorization: Bearer {{enfermeiro_token}}
+
+###
+
+### Gerar PDF do Prontuário (como Enfermeiro)
+GET http://localhost:3000/api/prontuarios/{{prontuario_id_2}}/pdf
+Authorization: Bearer {{enfermeiro_token}}

@@ -1,0 +1,164 @@
+### Criar Paciente (Enfermeiro)
+POST http://localhost:3000/api/pacientes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
+
+{
+  "nome": "João Silva",
+  "cpf": "12345678901",
+  "cns": "123456789012345",
+  "dataNascimento": "1990-01-01",
+  "sexo": "MASCULINO",
+  "racaCor": "PARDA",
+  "escolaridade": "MEDIO",
+  "endereco": {
+    "logradouro": "Rua Exemplo",
+    "numero": "123",
+    "bairro": "Centro",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "12345678"
+  },
+  "telefone": "11987654321",
+  "email": "joao.silva@exemplo.com",
+  "gruposRisco": [
+    "DIABETICO"
+  ],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "e86a55e8-f4d2-4c02-87f5-424912d097d2"
+}
+
+> {%
+    client.global.set("paciente_id", response.body.id);
+%}
+
+###
+
+### Criar Paciente (Administrador)
+POST http://localhost:3000/api/pacientes
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "nome": "Maria Souza",
+  "cpf": "98765432109",
+  "cns": "987654321098765",
+  "dataNascimento": "1985-05-10",
+  "sexo": "FEMININO",
+  "racaCor": "BRANCA",
+  "escolaridade": "SUPERIOR",
+  "endereco": {
+    "logradouro": "Avenida Teste",
+    "numero": "456",
+    "bairro": "Jardim",
+    "cidade": "Rio de Janeiro",
+    "estado": "RJ",
+    "cep": "87654321"
+  },
+  "telefone": "21987654321",
+  "email": "maria.souza@exemplo.com",
+  "gruposRisco": ["GESTANTE"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{unidade_saude_id}}"
+}
+
+> {%
+    client.global.set("paciente_id_2", response.body.id);
+%}
+
+###
+
+### Obter Paciente (Enfermeiro)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
+
+###
+
+### Obter Paciente (Médico)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Obter Paciente (Administrador)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
+Authorization: Bearer {{admin_token}}
+
+###
+
+### Listar Pacientes (Enfermeiro)
+GET http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
+
+###
+
+### Listar Pacientes (Médico)
+GET http://localhost:3000/api/pacientes
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Listar Pacientes (Administrador)
+GET http://localhost:3000/api/pacientes
+Authorization: Bearer {{admin_token}}
+
+###
+
+### Atualizar Paciente (Enfermeiro)
+PUT http://localhost:3000/api/pacientes/{{paciente_id}}
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
+
+{
+  "nome": "João Silva Atualizado",
+  "telefone": "11912345678",
+  "gruposRisco": [
+    "DIABETICO",
+    "HIPERTENSO"
+  ]
+}
+
+###
+
+### Atualizar Paciente (Administrador)
+PUT http://localhost:3000/api/pacientes/{{paciente_id_2}}
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "email": "maria.souza.atualizada@exemplo.com",
+  "gruposRisco": [
+    "GESTANTE",
+    "IDOSO"
+  ]
+}
+
+###
+
+### Deletar Paciente (Enfermeiro)
+DELETE http://localhost:3000/api/pacientes/{{paciente_id}}
+Authorization: Bearer {{enfermeiro_token}}
+
+###
+
+### Deletar Paciente (Administrador)
+DELETE http://localhost:3000/api/pacientes/{{paciente_id_2}}
+Authorization: Bearer {{admin_token}}
+
+###
+
+### Obter Histórico do Paciente (Enfermeiro)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
+
+###
+
+### Obter Histórico do Paciente (Médico)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+Authorization: Bearer {{medico_token}}
+
+###
+
+### Obter Histórico do Paciente (Administrador)
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+Authorization: Bearer {{admin_token}}
