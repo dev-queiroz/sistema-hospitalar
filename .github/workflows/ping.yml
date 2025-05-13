@@ -1,24 +1,14 @@
+# ping a cada 5 minutos em https://sistema-hospitalar.onrender.com
 name: Ping for HMS
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # A cada 5 minutos (UTC)
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Executar ping
-        run: node dist/index.js
-        env:
-          PING_URL: https://sistema-hospitalar.onrender.com
+      - name: Check if the server is up
+        run: curl -f https://sistema-hospitalar.onrender.com || exit 1
