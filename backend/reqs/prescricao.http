@@ -1,5 +1,5 @@
 ### Criar Prescrição (Médico)
-POST http://localhost:3000/api/prescricoes
+POST https://sistema-hospitalar.onrender.com/api/prescricoes
 Content-Type: application/json
 Authorization: Bearer {{medico_token}}
 
@@ -17,7 +17,7 @@ Authorization: Bearer {{medico_token}}
 ###
 
 ### Criar Prescrição (Enfermeiro, UPA)
-POST http://localhost:3000/api/prescricoes
+POST https://sistema-hospitalar.onrender.com/api/prescricoes
 Content-Type: application/json
 Authorization: Bearer {{enfermeiro_token}}
 
@@ -35,31 +35,31 @@ Authorization: Bearer {{enfermeiro_token}}
 ###
 
 ### Obter Prescrição (Médico)
-GET http://localhost:3000/api/prescricoes/{{prescricao_id}}
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Obter Prescrição (Enfermeiro)
-GET http://localhost:3000/api/prescricoes/{{prescricao_id}}
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Listar Prescrições por Paciente (Médico)
-GET http://localhost:3000/api/prescricoes/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/pacientes/{{paciente_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Listar Prescrições por Paciente (Enfermeiro)
-GET http://localhost:3000/api/prescricoes/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/pacientes/{{paciente_id}}
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Atualizar Prescrição (Médico)
-PUT http://localhost:3000/api/prescricoes/{{prescricao_id}}
+PUT https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
 Content-Type: application/json
 Authorization: Bearer {{medico_token}}
 
@@ -71,7 +71,7 @@ Authorization: Bearer {{medico_token}}
 ###
 
 ### Atualizar Prescrição (Enfermeiro, UPA)
-PUT http://localhost:3000/api/prescricoes/{{prescricao_id_2}}
+PUT https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id_2}}
 Content-Type: application/json
 Authorization: Bearer {{enfermeiro_token}}
 
@@ -83,23 +83,23 @@ Authorization: Bearer {{enfermeiro_token}}
 ###
 
 ### Deletar Prescrição (Médico)
-DELETE http://localhost:3000/api/prescricoes/{{prescricao_id}}
+DELETE https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Gerar PDF da Prescrição (Médico)
-GET http://localhost:3000/api/prescricoes/{{prescricao_id}}/pdf
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}/pdf
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Gerar PDF da Prescrição (Enfermeiro)
-GET http://localhost:3000/api/prescricoes/{{prescricao_id_2}}/pdf
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id_2}}/pdf
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Gerar PDF da Prescrição (Administrador)
-GET http://localhost:3000/api/prescricoes/{{prescricao_id}}/pdf
+GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}/pdf
 Authorization: Bearer {{admin_token}}

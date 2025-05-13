@@ -1,5 +1,5 @@
 ### Criar Prontuário
-POST http://localhost:3000/api/prontuarios
+POST https://sistema-hospitalar.onrender.com/api/prontuarios
 Content-Type: application/json
 Authorization: Bearer {{medico_token}}
 
@@ -20,19 +20,19 @@ Authorization: Bearer {{medico_token}}
 ###
 
 ### Obter Prontuário
-GET http://localhost:3000/api/prontuarios/{{prontuario_id}}
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Listar Prontuários por Paciente
-GET http://localhost:3000/api/prontuarios/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/pacientes/{{paciente_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Atualizar Prontuário
-PUT http://localhost:3000/api/prontuarios/{{prontuario_id}}
+PUT https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
 Content-Type: application/json
 Authorization: Bearer {{medico_token}}
 
@@ -47,19 +47,19 @@ Authorization: Bearer {{medico_token}}
 ###
 
 ### Deletar Prontuário
-DELETE http://localhost:3000/api/prontuarios/{{prontuario_id}}
+DELETE https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Gerar PDF do Prontuário
-GET http://localhost:3000/api/prontuarios/{{prontuario_id}}/pdf
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}/pdf
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Criar Prontuário (como Enfermeiro)
-POST http://localhost:3000/api/prontuarios
+POST https://sistema-hospitalar.onrender.com/api/prontuarios
 Content-Type: application/json
 Authorization: Bearer {{enfermeiro_token}}
 
@@ -80,17 +80,17 @@ Authorization: Bearer {{enfermeiro_token}}
 ###
 
 ### Obter Prontuário (como Enfermeiro)
-GET http://localhost:3000/api/prontuarios/{{prontuario_id_2}}
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id_2}}
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Listar Prontuários por Paciente (como Enfermeiro)
-GET http://localhost:3000/api/prontuarios/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/pacientes/{{paciente_id}}
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Gerar PDF do Prontuário (como Enfermeiro)
-GET http://localhost:3000/api/prontuarios/{{prontuario_id_2}}/pdf
+GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id_2}}/pdf
 Authorization: Bearer {{enfermeiro_token}}

@@ -1,5 +1,5 @@
 ### Criar Paciente (Enfermeiro)
-POST http://localhost:3000/api/pacientes
+POST https://sistema-hospitalar.onrender.com/api/pacientes
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
 
@@ -35,7 +35,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eX
 ###
 
 ### Criar Paciente (Administrador)
-POST http://localhost:3000/api/pacientes
+POST https://sistema-hospitalar.onrender.com/api/pacientes
 Content-Type: application/json
 Authorization: Bearer {{admin_token}}
 
@@ -69,43 +69,43 @@ Authorization: Bearer {{admin_token}}
 ###
 
 ### Obter Paciente (Enfermeiro)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
 
 ###
 
 ### Obter Paciente (Médico)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Obter Paciente (Administrador)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{admin_token}}
 
 ###
 
 ### Listar Pacientes (Enfermeiro)
-GET http://localhost:3000/api/pacientes
+GET https://sistema-hospitalar.onrender.com/api/pacientes
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
 
 ###
 
 ### Listar Pacientes (Médico)
-GET http://localhost:3000/api/pacientes
+GET https://sistema-hospitalar.onrender.com/api/pacientes
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Listar Pacientes (Administrador)
-GET http://localhost:3000/api/pacientes
+GET https://sistema-hospitalar.onrender.com/api/pacientes
 Authorization: Bearer {{admin_token}}
 
 ###
 
 ### Atualizar Paciente (Enfermeiro)
-PUT http://localhost:3000/api/pacientes/{{paciente_id}}
+PUT https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
 
@@ -121,7 +121,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eX
 ###
 
 ### Atualizar Paciente (Administrador)
-PUT http://localhost:3000/api/pacientes/{{paciente_id_2}}
+PUT https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id_2}}
 Content-Type: application/json
 Authorization: Bearer {{admin_token}}
 
@@ -136,29 +136,29 @@ Authorization: Bearer {{admin_token}}
 ###
 
 ### Deletar Paciente (Enfermeiro)
-DELETE http://localhost:3000/api/pacientes/{{paciente_id}}
+DELETE https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{enfermeiro_token}}
 
 ###
 
 ### Deletar Paciente (Administrador)
-DELETE http://localhost:3000/api/pacientes/{{paciente_id_2}}
+DELETE https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id_2}}
 Authorization: Bearer {{admin_token}}
 
 ###
 
 ### Obter Histórico do Paciente (Enfermeiro)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTkzNTA5LCJpYXQiOjE3NDY5ODk5MDksImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5ODk5MDl9XSwic2Vzc2lvbl9pZCI6IjBlYzk4YTRmLWIxZTQtNGVlMC1iYTYxLWFlMWQ1MmYyODFmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.rXzbFVMiQuprVn9VEjW0-5X2Eg7aB-C8A_ikDDcYsv8
 
 ###
 
 ### Obter Histórico do Paciente (Médico)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer {{medico_token}}
 
 ###
 
 ### Obter Histórico do Paciente (Administrador)
-GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
+GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer {{admin_token}}
