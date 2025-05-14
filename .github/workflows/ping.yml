@@ -1,4 +1,3 @@
-# ping a cada 5 minutos em https://sistema-hospitalar.onrender.com
 name: Ping for HMS
 
 on:
@@ -9,6 +8,9 @@ on:
 jobs:
   ping:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check if the server is up
-        run: curl -f https://sistema-hospitalar.onrender.com || exit 1
+      - name: Send GET request to the server
+        run: |
+          echo "Pinging the server..."
+          curl -f https://sistema-hospitalar.onrender.com || exit 1
