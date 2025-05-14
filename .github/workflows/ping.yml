@@ -13,4 +13,4 @@ jobs:
       - name: Send GET request to the server
         run: |
           echo "Pinging the server..."
-          curl -f https://sistema-hospitalar.onrender.com || exit 1
+          curl -f --max-time 60 https://sistema-hospitalar.onrender.com || exit 1
