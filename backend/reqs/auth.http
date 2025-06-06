@@ -29,8 +29,8 @@ POST https://sistema-hospitalar.onrender.com/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "queirozdouglas466@gmail.com",
-  "password": "Dv.23456"
+  "email": "rizepurple9@gmail.com",
+  "password": "12345678"
 }
 
 ### Esqueceu a senha

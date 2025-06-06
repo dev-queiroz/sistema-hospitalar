@@ -43,6 +43,22 @@ export class TriagemController {
         }
     }
 
+    async list(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.triagemService.getAllTriagens(usuarioId);
+            if (error || !data) {
+                res.status(404).json({error: error?.message || 'Nenhuma triagem encontrada'});
+                return;
+            }
+            res.json(data);
+        } catch (error: any) {
+            res.status(400).json({error: error.message});
+        }
+    }
+
     async get(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;

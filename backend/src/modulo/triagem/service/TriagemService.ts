@@ -1,7 +1,7 @@
 import {supabaseClient} from '../../../shared/database/supabase';
 import {Triagem} from '../model/Triagem';
 import {Paciente} from '../../paciente/model/Paciente';
-import {NivelGravidade} from '../../core/model/Enums';
+import {NivelGravidade, Papeis} from '../../core/model/Enums';
 import {SinaisVitais} from '../../core/model/Interfaces';
 import {PrioridadeService} from './PrioridadeService';
 
@@ -121,6 +121,42 @@ export class TriagemService {
             return {data: triagem, error: null};
         } catch (error) {
             return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+        }
+    }
+
+    async getAllTriagens(usuarioId: string): Promise<{ data: Triagem[], error: Error | null }> {
+        try {
+            const {data: usuario} = await supabase
+                .from('funcionario')
+                .select('papel')
+                .eq('id', usuarioId)
+                .eq('ativo', true)
+                .single();
+
+            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
+                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prontuários');
+            }
+
+            const {data, error} = await supabase
+                .from('triagem')
+                .select('*')
+                .eq('ativo', true)
+                .limit(100);
+
+            if (error) throw new Error(`Erro ao listar triagens: ${error.message}`);
+
+            const triagens = data.map((d: any) => new Triagem(
+                d.id,
+                d.paciente_id,
+                d.enfermeiro_id,
+                d.unidade_saude_id,
+                d.nivel_gravidade,
+                d.sinais_vitais,
+                d.queixa_principal
+            ));
+            return {data: triagens, error: null};
+        } catch (error) {
+            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
         }
     }
 
