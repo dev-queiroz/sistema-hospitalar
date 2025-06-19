@@ -23,8 +23,7 @@ Bem-vindo ao repositório do backend do **Sistema Hospitalar**, uma API RESTful 
 - **Geração de PDF**: pdfkit
 - **Segurança**: express-rate-limit, helmet, express-validator, bcrypt
 - **Hospedagem**: Render.com
-- **Monitoramento**: Winston, Sentry
-- **Testes**: Jest
+- **Monitoramento**: Winston
 
 ## Pré-requisitos
 
@@ -32,7 +31,6 @@ Bem-vindo ao repositório do backend do **Sistema Hospitalar**, uma API RESTful 
 - PostgreSQL (via Supabase ou local)
 - Redis
 - Conta no Render.com (para deploy)
-- Variáveis de ambiente configuradas (veja `.env.example`)
 
 ## Configuração e Execução
 
@@ -57,23 +55,15 @@ Bem-vindo ao repositório do backend do **Sistema Hospitalar**, uma API RESTful 
     SUPABASE_URL=sua-url-supabase
     SUPABASE_KEY=sua-chave-supabase
     JWT_SECRET=sua-chave-jwt
-    REDIS_URL=sua-url-redis
-    SMTP_HOST=seu-host-smtp
-    SMTP_USER=seu-usuario-smtp
-    SMTP_PASS=sua-senha-smtp
     ADMIN_SECRET=seu-admin-secret
-    ```
-
-4. **Configurar o banco de dados**:
-
-  - Execute as migrações do Supabase:
-
-    ```bash
-    npm run migrate
     ```
 
 5. **Iniciar o servidor**:
 
+  - Build:
+    ```bash
+    npm run build
+    ```
   - Modo desenvolvimento:
 
     ```bash
@@ -87,7 +77,7 @@ Bem-vindo ao repositório do backend do **Sistema Hospitalar**, uma API RESTful 
 
 6. **Acessar a API**:
 
-  - Base URL: `http://localhost:3000` (ou sua URL do Render.com)
+  - Base URL: `http://localhost:3000`
   - Exemplo: `POST /api/auth/login` para autenticação
 
 ## Documentação da API
@@ -105,14 +95,6 @@ A documentação completa da API está disponível em Documentação Oficial do 
 - Unidades de Saúde (`/unidades-saude`)
 
 Cada endpoint inclui descrição, funcionamento, segurança, desempenho e exemplos de uso.
-
-## Testes
-
-Execute os testes unitários e de integração com:
-
-```bash
-npm test
-```
 
 ## Deploy
 
@@ -137,7 +119,7 @@ O sistema segue as diretrizes da LGPD, com:
 
 - Geração de PDFs pode ser lenta em grandes volumes (mitigada com cache).
 - Validações externas (ex.: CNES, CRM) dependem de APIs de terceiros.
-- Escalabilidade testada para milhares de usuários; para milhões, exige ajustes (ex.: sharding).
+- Escalabilidade testada para centenas de usuários; para milhões, exige ajustes (ex.: sharding).
 
 ## Contribuição
 
@@ -153,7 +135,7 @@ Contribuições são bem-vindas! Siga estes passos:
 
 Para dúvidas ou suporte, entre em contato via:
 
-- **E-mail**: suporte@sistema-hospitalar.com
+- **E-mail**: dev.queiroz05@gmail.com
 - **Issues**: Abra uma issue no repositório
 
 ## Licença
