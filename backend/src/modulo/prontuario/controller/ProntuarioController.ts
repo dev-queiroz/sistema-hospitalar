@@ -352,7 +352,8 @@ ${triagens
                 res.status(500).json({error: "Erro interno ao gerar o PDF do prontuário."});
             }
         } catch (error: any) {
-            res.status(400).json({error: error.message});
+            console.error('Erro ao gerar PDF:', error);
+            res.status(400).json({error: error.message || 'Erro inesperado'});
         }
     }
 }
