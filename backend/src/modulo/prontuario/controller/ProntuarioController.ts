@@ -6,6 +6,7 @@ import {CreateProntuarioDTO, UpdateProntuarioDTO} from '../../core/dtos';
 import {z} from 'zod';
 import {Papeis} from '../../core/model/Enums';
 import {supabaseClient} from '../../../shared/database/supabase';
+import {compileLatexToPDF} from '../../../utils/pdfCompiler';
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; papel: Papeis };
@@ -333,7 +334,11 @@ ${triagens
 \\end{document}
 `;
 
-            res.status(200).json({latex: latexContent});
+        const pdfBuffer = await compileLatexToPDF(latexContent);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=prontuario_${id}.pdf`);
+        res.send(pdfBuffer);
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }
