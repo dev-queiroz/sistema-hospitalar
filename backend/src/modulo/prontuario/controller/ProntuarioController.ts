@@ -239,7 +239,6 @@ export class ProntuarioController {
 \\usepackage{enumitem}
 \\usepackage{datetime2}
 \\usepackage{fancyhdr}
-\\usepackage{graphicx}
 \\usepackage{booktabs}
 \\usepackage{longtable}
 \\usepackage{xcolor}
@@ -252,7 +251,7 @@ export class ProntuarioController {
 
 \\pagestyle{fancy}
 \\fancyhf{}
-\\lhead{\\includegraphics[width=3cm]{logo.png}}
+\\lhead{\\textbf{Sistema Hospitalar}}
 \\rhead{\\textbf{Prontuário Médico} \\\\ \\today}
 \\lfoot{Confidencial - Uso exclusivo do sistema hospitalar}
 \\rfoot{Página \\thepage}
@@ -333,12 +332,25 @@ ${triagens
 
 \\end{document}
 `;
+            console.log('LaTeX gerado (pré-compilação):\n', latexContent.slice(0, 1000));
 
-        const pdfBuffer = await compileLatexToPDF(latexContent);
+            let pdfBuffer: Buffer | undefined;
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=prontuario_${id}.pdf`);
-        res.send(pdfBuffer);
+            try {
+                pdfBuffer = await compileLatexToPDF(latexContent);
+            } catch (err: any) {
+                console.error("Erro ao compilar o LaTeX do prontuário:", err.message);
+                res.status(400).json({error: "Erro ao gerar o PDF do prontuário."});
+                return;
+            }
+
+            if (pdfBuffer) {
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename=prontuario_${id}.pdf`);
+                res.send(pdfBuffer);
+            } else {
+                res.status(500).json({error: "Erro interno ao gerar o PDF do prontuário."});
+            }
         } catch (error: any) {
             res.status(400).json({error: error.message});
         }

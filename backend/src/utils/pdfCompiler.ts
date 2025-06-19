@@ -11,14 +11,18 @@ export async function compileLatexToPDF(latex: string): Promise<Buffer> {
 
         fs.writeFileSync(texPath, latex);
 
-        exec(`pdflatex -interaction=nonstopmode -output-directory=${tmpDir.name} ${texPath}`, (error) => {
-            if (error) {
-                reject(`Erro ao compilar LaTeX: ${error.message}`);
-            } else {
-                const pdfBuffer = fs.readFileSync(pdfPath);
-                tmpDir.removeCallback(); // Limpa temporários
-                resolve(pdfBuffer);
+        exec(
+            `pdflatex -interaction=nonstopmode -output-directory=${tmpDir.name} ${texPath}`,
+            (error, stdout, stderr) => {
+                if (error) {
+                    console.error("Erro LaTeX (stderr):\n", stderr); // ← log completo
+                    reject(new Error(`Erro ao compilar LaTeX: ${stderr || error.message}`));
+                } else {
+                    const pdfBuffer = fs.readFileSync(pdfPath);
+                    tmpDir.removeCallback(); // Limpa temporários
+                    resolve(pdfBuffer);
+                }
             }
-        });
+        );
     });
 }
