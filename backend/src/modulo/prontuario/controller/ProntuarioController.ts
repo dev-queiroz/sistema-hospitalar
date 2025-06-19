@@ -151,10 +151,13 @@ export class ProntuarioController {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
 
+            console.log(`Gerando PDF para prontuário ${id} por usuário ${usuarioId}`);
+
             const {
                 data: prontuario,
                 error: prontuarioError
             } = await this.prontuarioService.getProntuario(id, usuarioId);
+            console.log('Prontuário:', prontuario ? 'Encontrado' : 'Não encontrado', prontuarioError?.message);
             if (prontuarioError || !prontuario) {
                 res.status(404).json({error: prontuarioError?.message || 'Prontuário não encontrado'});
                 return;
@@ -164,6 +167,7 @@ export class ProntuarioController {
                 data: paciente,
                 error: pacienteError
             } = await this.pacienteService.getPaciente(prontuario.pacienteId, usuarioId);
+            console.log('Paciente:', paciente ? 'Encontrado' : 'Não encontrado', pacienteError?.message);
             if (pacienteError || !paciente) {
                 res.status(400).json({error: pacienteError?.message || 'Paciente não encontrado'});
                 return;
@@ -175,6 +179,7 @@ export class ProntuarioController {
                 .eq('id', prontuario.profissionalId)
                 .eq('ativo', true)
                 .single();
+            console.log('Profissional:', profissional ? 'Encontrado' : 'Não encontrado', profissionalError?.message);
             if (profissionalError || !profissional) {
                 res.status(400).json({error: profissionalError?.message || 'Profissional não encontrado'});
                 return;
@@ -185,6 +190,7 @@ export class ProntuarioController {
                 .select('nome, telefone')
                 .eq('id', prontuario.unidadeSaudeId)
                 .single();
+            console.log('Unidade:', unidade ? 'Encontrada' : 'Não encontrada', unidadeError?.message);
             if (unidadeError || !unidade) {
                 res.status(400).json({error: unidadeError?.message || 'Unidade de saúde não encontrada'});
                 return;
@@ -194,6 +200,7 @@ export class ProntuarioController {
                 data: triagens,
                 error: triagemError
             } = await this.triagemService.listTriagensByPaciente(prontuario.pacienteId);
+            console.log('Triagens:', triagens?.length || 0, triagemError?.message);
             if (triagemError) {
                 res.status(400).json({error: triagemError.message});
                 return;
@@ -216,17 +223,20 @@ export class ProntuarioController {
                 return str.replace(/[&%$#_{}~^\\]/g, (match) => replacements[match]);
             };
 
-            const triagemContent = triagens.length > 0
+            const triagemContent = triagens?.length > 0
                 ? triagens
                     .map((t) =>
                         `\\item[${new Date(t.createdAt).toLocaleDateString('pt-BR')}]: ${escapeLatex(t.queixaPrincipal)} (Gravidade: ${t.nivelGravidade})`
                     )
-                    .join('')
-                : 'Nenhuma triagem registrada.';
+                    .join('\n')
+                : '\\item Nenhuma triagem registrada.';
 
-            const timelineContent = triagens.length > 0
+            const timelineContent = triagens?.length > 0
                 ? triagens
-                    .map((t) => `\\event{${new Date(t.createdAt).toLocaleDateString('pt-BR')}}{Triagem: ${escapeLatex(t.queixaPrincipal)}}`)
+                    .map((t, i) =>
+                        `\\node[below] at (${i + 1},0) {\\small ${escapeLatex(new Date(t.createdAt).toLocaleDateString('pt-BR'))}};` +
+                        `\\draw (${i + 1},0.2) circle (0.1);`
+                    )
                     .join('\n')
                 : '';
 
@@ -236,6 +246,7 @@ export class ProntuarioController {
 \\usepackage[T1]{fontenc}
 \\usepackage{geometry}
 \\geometry{margin=2cm}
+\\usepackage{noto}
 \\usepackage{enumitem}
 \\usepackage{datetime2}
 \\usepackage{fancyhdr}
@@ -291,28 +302,16 @@ ${escapeLatex(prontuario.descricao)} \\par
 
 \\section*{Triagens Associadas}
 \\begin{itemize}[leftmargin=*,labelsep=5mm]
-${triagens.length > 0
-                ? triagens
-                    .map((t) =>
-                        `\\item [${new Date(t.createdAt).toLocaleDateString('pt-BR')}]: ${escapeLatex(t.queixaPrincipal)} (Gravidade: ${t.nivelGravidade})`
-                    )
-                    .join('\n')
-                : '\\item Nenhuma triagem registrada.'}
+${triagemContent}
 \\end{itemize}
 
 \\section*{Linha do Tempo de Atendimentos}
 \\begin{center}
 \\begin{tikzpicture}
-\\draw[->] (0,0) -- (${triagens.length + 1}.5,0) node[right] {Tempo};
-${triagens
-                .map(
-                    (t, i) =>
-                        `\\node[below] at (${i + 1},0) {\\small ${escapeLatex(
-                            new Date(t.createdAt).toLocaleDateString('pt-BR')
-                        )}};`
-                )
-                .join('\n')}
-\\node[below] at (${triagens.length + 1},0) {\\small ${new Date().toLocaleDateString('pt-BR')}};
+\\draw[->] (0,0) -- (${(triagens?.length || 0) + 1}.5,0) node[right] {Tempo};
+${timelineContent}
+\\node[below] at (${(triagens?.length || 0) + 1},0) {\\small ${new Date().toLocaleDateString('pt-BR')}};
+\\draw (${(triagens?.length || 0) + 1},0.2) circle (0.1);
 \\end{tikzpicture}
 \\end{center}
 
@@ -332,15 +331,17 @@ ${triagens
 
 \\end{document}
 `;
-            console.log('LaTeX gerado (pré-compilação):\n', latexContent.slice(0, 1000));
+
+            console.log('LaTeX gerado (primeiros 1000 caracteres):\n', latexContent.slice(0, 1000));
 
             let pdfBuffer: Buffer | undefined;
 
             try {
                 pdfBuffer = await compileLatexToPDF(latexContent);
+                console.log('PDF compilado com sucesso, tamanho:', pdfBuffer.length, 'bytes');
             } catch (err: any) {
-                console.error("Erro ao compilar o LaTeX do prontuário:", err.message);
-                res.status(400).json({error: "Erro ao gerar o PDF do prontuário."});
+                console.error('Erro ao compilar LaTeX:', err.message);
+                res.status(500).json({error: 'Erro ao gerar o PDF do prontuário: ' + err.message});
                 return;
             }
 
@@ -349,10 +350,11 @@ ${triagens
                 res.setHeader('Content-Disposition', `attachment; filename=prontuario_${id}.pdf`);
                 res.send(pdfBuffer);
             } else {
-                res.status(500).json({error: "Erro interno ao gerar o PDF do prontuário."});
+                res.status(500).json({error: 'Erro interno ao gerar o PDF do prontuário.'});
+                return;
             }
         } catch (error: any) {
-            console.error('Erro ao gerar PDF:', error);
+            console.error('Erro ao gerar PDF:', error.message);
             res.status(400).json({error: error.message || 'Erro inesperado'});
         }
     }
