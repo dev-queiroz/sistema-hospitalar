@@ -1,7 +1,7 @@
 ### Criar Prescrição (Médico)
 POST https://sistema-hospitalar.onrender.com/api/prescricoes
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
     "pacienteId": "{{paciente_id}}",
@@ -10,16 +10,10 @@ Authorization: Bearer {{medico_token}}
     "cid10": "J45"
 }
 
-> {%
-    client.global.set("prescricao_id", response.body.id);
-%}
-
-###
-
 ### Criar Prescrição (Enfermeiro, UPA)
 POST https://sistema-hospitalar.onrender.com/api/prescricoes
 Content-Type: application/json
-Authorization: Bearer {{enfermeiro_token}}
+Authorization: Bearer {{token}}
 
 {
     "pacienteId": "{{paciente_id}}",
@@ -28,78 +22,54 @@ Authorization: Bearer {{enfermeiro_token}}
     "cid10": "R51"
 }
 
-> {%
-    client.global.set("prescricao_id_2", response.body.id);
-%}
-
-###
-
 ### Obter Prescrição (Médico)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Obter Prescrição (Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Prescrições por Paciente (Médico)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/pacientes/{{paciente_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Prescrições por Paciente (Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/pacientes/{{paciente_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Atualizar Prescrição (Médico)
 PUT https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
   "detalhesPrescricao": "Amoxicilina 500mg, 1 cápsula a cada 8 horas por 10 dias.",
   "cid10": "J45.0"
 }
 
-###
-
 ### Atualizar Prescrição (Enfermeiro, UPA)
 PUT https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id_2}}
 Content-Type: application/json
-Authorization: Bearer {{enfermeiro_token}}
+Authorization: Bearer {{token}}
 
 {
   "detalhesPrescricao": "Dipirona 500mg, 1 comprimido a cada 8 horas por 3 dias.",
   "cid10": "R51"
 }
 
-###
-
 ### Deletar Prescrição (Médico)
 DELETE https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Gerar PDF da Prescrição (Médico)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}/pdf
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Gerar PDF da Prescrição (Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id_2}}/pdf
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Gerar PDF da Prescrição (Administrador)
 GET https://sistema-hospitalar.onrender.com/api/prescricoes/{{prescricao_id}}/pdf
-Authorization: Bearer {{admin_token}}
+Authorization: Bearer {{token}}

@@ -1,12 +1,12 @@
 ### Criar Triagem
 POST https://sistema-hospitalar.onrender.com/api/triagens
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTk3MzA2LCJpYXQiOjE3NDY5OTM3MDYsImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5OTM3MDZ9XSwic2Vzc2lvbl9pZCI6ImIwZDE3ZmE5LTkwMGItNGQxMy04MDVmLTNjODcyNmVkZDFiOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.gP7sqV6bvSZiM-8gglaRA88v1uDKfOgSl46ZMuGuUso
+Authorization: Bearer {{token}}
 
 {
-  "pacienteId": "63498562-d037-403d-89ce-9e970070e025",
-  "unidadeSaudeId": "e86a55e8-f4d2-4c02-87f5-424912d097d2",
-  "enfermeiroId": "a444cffe-cd41-4011-b74b-83e6f0cf7710",
+  "pacienteId": "{{paciente_id}}",
+  "unidadeSaudeId": "{{unidade_saude_id}}",
+  "enfermeiroId": "{{enfermeiro_id}}",
   "sinaisVitais": {
     "pressaoArterialSistolica": 120,
     "pressaoArterialDiastolica": 80,
@@ -20,34 +20,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eX
   "queixaPrincipal": "Dor de cabeça leve"
 }
 
-> {%
-    client.global.set("triagem_id", response.body.id);
-%}
-
-###
-
 ### Obter Triagem
 GET https://sistema-hospitalar.onrender.com/api/triagens/{{triagem_id}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTk3MzA2LCJpYXQiOjE3NDY5OTM3MDYsImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5OTM3MDZ9XSwic2Vzc2lvbl9pZCI6ImIwZDE3ZmE5LTkwMGItNGQxMy04MDVmLTNjODcyNmVkZDFiOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.gP7sqV6bvSZiM-8gglaRA88v1uDKfOgSl46ZMuGuUso
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Triagens por Paciente
-GET https://sistema-hospitalar.onrender.com/api/triagens/pacientes/63498562-d037-403d-89ce-9e970070e025
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTk3MzA2LCJpYXQiOjE3NDY5OTM3MDYsImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5OTM3MDZ9XSwic2Vzc2lvbl9pZCI6ImIwZDE3ZmE5LTkwMGItNGQxMy04MDVmLTNjODcyNmVkZDFiOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.gP7sqV6bvSZiM-8gglaRA88v1uDKfOgSl46ZMuGuUso
-
-###
+GET https://sistema-hospitalar.onrender.com/api/triagens/pacientes/{{paciente_id}}
+Authorization: Bearer {{token}}
 
 ### Listar Pacientes por Gravidade
-GET https://sistema-hospitalar.onrender.com/api/triagens/gravidade/AZUL/unidade/e86a55e8-f4d2-4c02-87f5-424912d097d2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTk3MzA2LCJpYXQiOjE3NDY5OTM3MDYsImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5OTM3MDZ9XSwic2Vzc2lvbl9pZCI6ImIwZDE3ZmE5LTkwMGItNGQxMy04MDVmLTNjODcyNmVkZDFiOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.gP7sqV6bvSZiM-8gglaRA88v1uDKfOgSl46ZMuGuUso
-
-###
+GET https://sistema-hospitalar.onrender.com/api/triagens/gravidade/{{cor}}/unidade/{{unidade_saude_id}}
+Authorization: Bearer {{token}}
 
 ### Atualizar Triagem
 PUT https://sistema-hospitalar.onrender.com/api/triagens/{{triagem_id}}
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNDQ0Y2ZmZS1jZDQxLTQwMTEtYjc0Yi04M2U2ZjBjZjc3MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ2OTk3MzA2LCJpYXQiOjE3NDY5OTM3MDYsImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiZGV2LnF1ZWlyb3owNUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6Ikpvw6NvIFNhbnRvcyIsInBhcGVsIjoiRU5GRVJNRUlSTyIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYTQ0NGNmZmUtY2Q0MS00MDExLWI3NGItODNlNmYwY2Y3NzEwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDY5OTM3MDZ9XSwic2Vzc2lvbl9pZCI6ImIwZDE3ZmE5LTkwMGItNGQxMy04MDVmLTNjODcyNmVkZDFiOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.gP7sqV6bvSZiM-8gglaRA88v1uDKfOgSl46ZMuGuUso
+Authorization: Bearer {{token}}
 
 {
   "sinaisVitais": {
@@ -63,41 +51,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eX
   "queixaPrincipal": "Dor de cabeça moderada"
 }
 
-###
-
 ### Deletar Triagem
 DELETE https://sistema-hospitalar.onrender.com/api/triagens/{{triagem_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Login Médico (Obter Token para Testar Rotas como Médico)
 POST https://sistema-hospitalar.onrender.com/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "medico@exemplo.com",
+  "email": "medico@gmail.com",
   "password": "Senha@123"
 }
 
-> {%
-    client.global.set("medico_token", response.body.access_token);
-%}
-
-###
-
 ### Obter Triagem (como Médico)
 GET https://sistema-hospitalar.onrender.com/api/triagens/{{triagem_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Triagens por Paciente (como Médico)
 GET https://sistema-hospitalar.onrender.com/api/triagens/pacientes/{{paciente_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Pacientes por Gravidade (como Médico)
 GET https://sistema-hospitalar.onrender.com/api/triagens/gravidade/Vermelho/unidade/{{unidade_saude_id}}
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}

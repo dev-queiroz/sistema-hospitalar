@@ -165,7 +165,7 @@ export class ProntuarioController {
 
             const {data: unidade, error: unidadeError} = await supabaseClient
                 .from('unidade_saude')
-                .select('nome')
+                .select('nome, telefone')
                 .eq('id', prontuario.unidadeSaudeId)
                 .single();
             if (unidadeError || !unidade) {
@@ -207,6 +207,12 @@ export class ProntuarioController {
                     .join('')
                 : 'Nenhuma triagem registrada.';
 
+            const timelineContent = triagens.length > 0
+                ? triagens
+                    .map((t) => `\\event{${new Date(t.createdAt).toLocaleDateString('pt-BR')}}{Triagem: ${escapeLatex(t.queixaPrincipal)}}`)
+                    .join('\n')
+                : '';
+
             const latexContent = `
 \\documentclass[a4paper,12pt]{article}
 \\usepackage[utf8]{inputenc}
@@ -215,33 +221,101 @@ export class ProntuarioController {
 \\geometry{margin=2cm}
 \\usepackage{enumitem}
 \\usepackage{datetime2}
-\\usepackage{noto}
+\\usepackage{fancyhdr}
+\\usepackage{graphicx}
+\\usepackage{booktabs}
+\\usepackage{longtable}
+\\usepackage{xcolor}
+\\usepackage{titling}
+\\usepackage{tikz}
+\\usepackage{hyperref}
+
+\\definecolor{headerblue}{RGB}{0, 51, 102}
+\\definecolor{lightgray}{RGB}{240, 240, 240}
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\lhead{\\includegraphics[width=3cm]{logo.png}}
+\\rhead{\\textbf{Prontuário Médico} \\\\ \\today}
+\\lfoot{Confidencial - Uso exclusivo do sistema hospitalar}
+\\rfoot{Página \\thepage}
+
+\\pretitle{\\begin{center}\\LARGE\\color{headerblue}\\textbf}
+\\posttitle{\\end{center}}
+\\title{Prontuário Médico}
+\\author{}
+\\date{}
 
 \\begin{document}
 
-\\section*{Prontuário Médico}
+\\maketitle
+\\vspace{-1cm}
+\\hrule height 1pt
+\\vspace{0.5cm}
 
-\\begin{description}
-    \\item[Paciente:] ${escapeLatex(paciente.nome)}
-    \\item[CPF:] ${paciente.cpf}
-    \\item[CNS:] ${paciente.cns}
-    \\item[Profissional:] ${escapeLatex(profissional.nome)} (${
-                profissional.papel === Papeis.MEDICO ? 'CRM: ' + (profissional.crm || 'N/A') : 'Enfermeiro'
-            })
-    \\item[Unidade de Saúde:] ${escapeLatex(unidade.nome)}
-    \\item[Data:] \\today
-\\end{description}
+\\section*{Informações Gerais}
+\\begin{longtable}{@{}p{5cm}p{10cm}@{}}
+  \\toprule
+  \\textbf{Campo} & \\textbf{Detalhes} \\\\
+  \\midrule
+  Paciente & ${escapeLatex(paciente.nome)} \\\\
+  CPF & ${escapeLatex(paciente.cpf)} \\\\
+  CNS & ${escapeLatex(paciente.cns)} \\\\
+  Data de Nascimento & ${escapeLatex(new Date(paciente.dataNascimento).toLocaleDateString('pt-BR'))} \\\\
+  Profissional & ${escapeLatex(profissional.nome)} (${profissional.papel === Papeis.MEDICO ? `Médico, CRM: ${escapeLatex(profissional.crm || 'N/A')}` : 'Enfermeiro'}) \\\\
+  Unidade de Saúde & ${escapeLatex(unidade.nome)} \\\\
+  Data do Registro & ${new Date().toLocaleDateString('pt-BR')} \\\\
+  \\bottomrule
+\\end{longtable}
 
-\\section*{Descrição}
-${escapeLatex(prontuario.descricao).replace(/\n/g, '\\\\')}
+\\section*{Descrição do Prontuário}
+\\color{black}
+${escapeLatex(prontuario.descricao)} \\par
+\\vspace{0.5cm}
 
 \\section*{Triagens Associadas}
-\\begin{itemize}
-${triagemContent}
+\\begin{itemize}[leftmargin=*,labelsep=5mm]
+${triagens.length > 0
+                ? triagens
+                    .map((t) =>
+                        `\\item [${new Date(t.createdAt).toLocaleDateString('pt-BR')}]: ${escapeLatex(t.queixaPrincipal)} (Gravidade: ${t.nivelGravidade})`
+                    )
+                    .join('\n')
+                : '\\item Nenhuma triagem registrada.'}
 \\end{itemize}
 
+\\section*{Linha do Tempo de Atendimentos}
+\\begin{center}
+\\begin{tikzpicture}
+\\draw[->] (0,0) -- (${triagens.length + 1}.5,0) node[right] {Tempo};
+${triagens
+                .map(
+                    (t, i) =>
+                        `\\node[below] at (${i + 1},0) {\\small ${escapeLatex(
+                            new Date(t.createdAt).toLocaleDateString('pt-BR')
+                        )}};`
+                )
+                .join('\n')}
+\\node[below] at (${triagens.length + 1},0) {\\small ${new Date().toLocaleDateString('pt-BR')}};
+\\end{tikzpicture}
+\\end{center}
+
+\\section*{Notas Adicionais}
+\\begin{itemize}
+  \\item Este documento é confidencial e deve ser acessado apenas por profissionais autorizados.
+  \\item Para mais informações, contate a unidade de saúde em ${escapeLatex(unidade.telefone || '(11) 99999-9999')}.
+\\end{itemize}
+
+\\clearpage
+\\begin{center}
+  \\small
+  \\color{gray}
+  Documento gerado pelo Sistema Hospitalar em ${new Date().toLocaleDateString('pt-BR')}. \\\\
+  \\href{https://sistema-hospitalar.onrender.com}{sistema-hospitalar.onrender.com}
+\\end{center}
+
 \\end{document}
-      `;
+`;
 
             res.status(200).json({latex: latexContent});
         } catch (error: any) {

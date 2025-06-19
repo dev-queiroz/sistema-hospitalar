@@ -1,7 +1,7 @@
 ### Criar Consulta (Médico)
 POST https://sistema-hospitalar.onrender.com/api/consultas
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
     "pacienteId": "{{paciente_id}}",
@@ -10,66 +10,44 @@ Authorization: Bearer {{medico_token}}
     "cid10": "J45"
 }
 
-> {%
-    client.global.set("consulta_id", response.body.id);
-%}
-
-###
-
 ### Obter Consulta (Médico)
 GET https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Obter Consulta (Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Consultas por Paciente (Médico)
 GET https://sistema-hospitalar.onrender.com/api/consultas/pacientes/{{paciente_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Consultas por Paciente (Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/consultas/pacientes/{{paciente_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Atualizar Consulta (Médico)
 PUT https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
   "observacoes": "Paciente apresentou melhora após 5 dias de antibiótico. Mantida medicação.",
   "cid10": "J45.0"
 }
 
-###
-
 ### Deletar Consulta (Médico)
 DELETE https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Consultas por Profissional (Administrador)
 GET https://sistema-hospitalar.onrender.com/api/consultas/profissional/{{medico_id}}
-Authorization: Bearer {{admin_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Atendimentos Ativos por Unidade (Administrador)
 GET https://sistema-hospitalar.onrender.com/api/consultas/unidade/{{unidade_saude_id}}/atendimentos-ativos
-Authorization: Bearer {{admin_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Consultas por Unidade (Administrador)
 GET https://sistema-hospitalar.onrender.com/api/consultas/unidade/{{unidade_saude_id}}
-Authorization: Bearer {{admin_token}}
+Authorization: Bearer {{token}}

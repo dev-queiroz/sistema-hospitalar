@@ -1,7 +1,7 @@
 ### Criar Prontuário
 POST https://sistema-hospitalar.onrender.com/api/prontuarios
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
     "pacienteId": "{{paciente_id}}",
@@ -9,59 +9,43 @@ Authorization: Bearer {{medico_token}}
     "descricao": "Paciente apresentou febre e tosse persistente. Realizado exame físico e solicitado raio-X de tórax.",
     "dadosAnonimizados": {
         "nome": "Paciente Anonimizado",
-        "cpf": "XXX.XXX.XXX-XX"
+        "cpf": "01329538200"
     }
 }
 
-> {%
-    client.global.set("prontuario_id", response.body.id);
-%}
-
-###
-
 ### Obter Prontuário
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Prontuários por Paciente
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/pacientes/{{paciente_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Atualizar Prontuário
 PUT https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
 Content-Type: application/json
-Authorization: Bearer {{medico_token}}
+Authorization: Bearer {{token}}
 
 {
   "descricao": "Paciente retornou com melhora dos sintomas após medicação. Raio-X normal.",
   "dadosAnonimizados": {
     "nome": "Paciente Anonimizado Atualizado",
-    "cpf": "XXX.XXX.XXX-XX"
+    "cpf": "01329538200"
   }
 }
 
-###
-
 ### Deletar Prontuário
 DELETE https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Gerar PDF do Prontuário
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id}}/pdf
-Authorization: Bearer {{medico_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Criar Prontuário (como Enfermeiro)
 POST https://sistema-hospitalar.onrender.com/api/prontuarios
 Content-Type: application/json
-Authorization: Bearer {{enfermeiro_token}}
+Authorization: Bearer {{token}}
 
 {
     "pacienteId": "{{paciente_id}}",
@@ -69,28 +53,18 @@ Authorization: Bearer {{enfermeiro_token}}
     "descricao": "Paciente com pressão arterial elevada (140/90 mmHg). Aplicada medicação conforme prescrição.",
     "dadosAnonimizados": {
         "nome": "Paciente Anonimizado",
-        "cpf": "XXX.XXX.XXX-XX"
+        "cpf": "01329538200"
     }
 }
 
-> {%
-    client.global.set("prontuario_id_2", response.body.id);
-%}
-
-###
-
 ### Obter Prontuário (como Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id_2}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Listar Prontuários por Paciente (como Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/pacientes/{{paciente_id}}
-Authorization: Bearer {{enfermeiro_token}}
-
-###
+Authorization: Bearer {{token}}
 
 ### Gerar PDF do Prontuário (como Enfermeiro)
 GET https://sistema-hospitalar.onrender.com/api/prontuarios/{{prontuario_id_2}}/pdf
-Authorization: Bearer {{enfermeiro_token}}
+Authorization: Bearer {{token}}
