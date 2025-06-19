@@ -8,6 +8,7 @@ const prontuarioController = new ProntuarioController();
 
 // Rotas para Prontuários
 router.post('/', requireAuth, restrictTo(Papeis.MEDICO, Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), prontuarioController.create.bind(prontuarioController));
+router.get('/', requireAuth, restrictTo(Papeis.MEDICO, Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), prontuarioController.list.bind(prontuarioController));
 router.get('/:id', requireAuth, restrictTo(Papeis.MEDICO, Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), prontuarioController.get.bind(prontuarioController));
 router.get('/pacientes/:pacienteId', requireAuth, restrictTo(Papeis.MEDICO, Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), prontuarioController.listByPaciente.bind(prontuarioController));
 router.put('/:id', requireAuth, restrictTo(Papeis.MEDICO, Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), prontuarioController.update.bind(prontuarioController));

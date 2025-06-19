@@ -106,6 +106,41 @@ export class ConsultaService {
         }
     }
 
+    async getAllConsultas(usuarioId: string): Promise<{ data: Consulta[], error: Error | null }> {
+        try {
+            const {data: usuario} = await supabase
+                .from('funcionario')
+                .select('papel')
+                .eq('id', usuarioId)
+                .eq('ativo', true)
+                .single();
+            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
+                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar todas as consultas');
+            }
+
+            const {data, error} = await supabase
+                .from('consulta')
+                .select('*')
+                .eq('ativo', true)
+                .limit(100);
+
+            if (error) throw new Error(`Erro ao listar consultas: ${error.message}`);
+
+            const consultas = data.map((d: any) => new Consulta(
+                d.id,
+                d.paciente_id,
+                d.profissional_id,
+                d.unidade_saude_id,
+                d.observacoes,
+                d.cid10,
+                d.data_consulta
+            ));
+            return {data: consultas, error: null};
+        } catch (error) {
+            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+        }
+    }
+
     async getConsulta(id: string, usuarioId: string): Promise<{ data: Consulta | null, error: Error | null }> {
         try {
             const {data: usuario} = await supabase

@@ -106,6 +106,41 @@ export class PrescricaoService {
         }
     }
 
+    async getAllPrescricoes(usuarioId: string): Promise<{ data: Prescricao[], error: Error | null }> {
+        try {
+            const {data: usuario} = await supabase
+                .from('funcionario')
+                .select('papel')
+                .eq('id', usuarioId)
+                .eq('ativo', true)
+                .single();
+            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
+                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prescrições');
+            }
+
+            const {data, error} = await supabase
+                .from('prescricao')
+                .select('*')
+                .eq('ativo', true)
+                .limit(100);
+
+            if (error) throw new Error(`Erro ao listar prescrições: ${error.message}`);
+
+            const prescricoes = data.map((d: any) => new Prescricao(
+                d.id,
+                d.paciente_id,
+                d.profissional_id,
+                d.unidade_saude_id,
+                d.detalhes_prescricao,
+                d.cid10,
+                new Date(d.data_criacao)
+            ));
+            return {data: prescricoes, error: null};
+        } catch (error) {
+            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+        }
+    }
+
     async getPrescricao(id: string, usuarioId: string): Promise<{ data: Prescricao | null, error: Error | null }> {
         try {
             const {data: usuario} = await supabase

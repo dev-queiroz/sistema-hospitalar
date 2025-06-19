@@ -78,6 +78,40 @@ export class ProntuarioService {
         }
     }
 
+    async getAllProntuarios(usuarioId: string): Promise<{ data: Prontuario[], error: Error | null }> {
+        try {
+            const {data: usuario} = await supabase
+                .from('funcionario')
+                .select('papel')
+                .eq('id', usuarioId)
+                .eq('ativo', true)
+                .single();
+            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
+                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prontuários');
+            }
+
+            const {data, error} = await supabase
+                .from('prontuario')
+                .select('*')
+                .eq('ativo', true)
+                .limit(100);
+
+            if (error) throw new Error(`Erro ao listar prontuários: ${error.message}`);
+
+            const prontuarios = data.map((d: any) => new Prontuario(
+                d.id,
+                d.paciente_id,
+                d.profissional_id,
+                d.unidade_saude_id,
+                d.descricao,
+                d.dados_anonimizados
+            ));
+            return {data: prontuarios, error: null};
+        } catch (error) {
+            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+        }
+    }
+
     async getProntuario(id: string, usuarioId: string): Promise<{ data: Prontuario | null, error: Error | null }> {
         try {
             const {data: usuario} = await supabase

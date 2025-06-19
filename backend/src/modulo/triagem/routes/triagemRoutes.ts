@@ -7,6 +7,7 @@ const router = Router();
 const triagemController = new TriagemController();
 
 router.post('/', requireAuth, restrictTo(Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), triagemController.create.bind(triagemController));
+router.get('/', requireAuth, restrictTo(Papeis.ENFERMEIRO, Papeis.MEDICO, Papeis.ADMINISTRADOR_PRINCIPAL), triagemController.list.bind(triagemController));
 router.put('/:id', requireAuth, restrictTo(Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), triagemController.update.bind(triagemController));
 router.delete('/:id', requireAuth, restrictTo(Papeis.ENFERMEIRO, Papeis.ADMINISTRADOR_PRINCIPAL), triagemController.delete.bind(triagemController));
 router.get('/:id', requireAuth, restrictTo(Papeis.ENFERMEIRO, Papeis.MEDICO, Papeis.ADMINISTRADOR_PRINCIPAL), triagemController.get.bind(triagemController));

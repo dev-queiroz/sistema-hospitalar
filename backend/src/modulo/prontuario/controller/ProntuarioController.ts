@@ -50,6 +50,22 @@ export class ProntuarioController {
         }
     }
 
+    async list(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const usuarioId = req.user?.id;
+            if (!usuarioId) throw new Error('ID do usuário não encontrado');
+
+            const {data, error} = await this.prontuarioService.getAllProntuarios(usuarioId);
+            if (error) {
+                res.status(400).json({error: error.message});
+                return;
+            }
+            res.json(data);
+        } catch (error: any) {
+            res.status(400).json({error: error.message});
+        }
+    }
+
     async get(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
