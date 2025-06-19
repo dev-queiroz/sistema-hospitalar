@@ -5,3 +5,4 @@ node_modules/
 /frontend/node_modules
 /backend/dist
 prontuario.controller.spec.ts
+jest.config.js
