@@ -1,7 +1,10 @@
-import * as request from 'supertest';
-import * as express from 'express';
+// @ts-ignore
+import request from 'supertest';
+// @ts-ignore
+import express from 'express';
 import {router} from './backend/src/modulo/prontuario/routes/prontuarioRoutes';
-import * as fs from 'fs';
+// @ts-ignore
+import fs from 'fs';
 import {Server} from 'http';
 import {ProntuarioService} from './backend/src/modulo/prontuario/service/ProntuarioService';
 import {PacienteService} from './backend/src/modulo/paciente/service/PacienteService';
@@ -20,7 +23,7 @@ describe('📄 PDF - Geração de prontuário', () => {
     let app: express.Application;
     let server: Server;
     const prontuarioId = '7a051280-a49e-4d52-8213-2d6e6d10d622';
-    const token = 'eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZWt1enBzZnd1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhZjA1ZGQ1OS01MzIzLTRkYjktYTY3OS1iZjkwOGUxZWQwMzkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUwMzUwNDc3LCJpYXQiOjE3NTAzNDY4NzcsImVtYWlsIjoicml6ZXB1cnBsZTlAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InJpemVwdXJwbGU5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiSm_Do28gU2FudG9zIiwicGFwZWwiOiJFTkZFUk1FSVJPIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJhZjA1ZGQ1OS01MzIzLTRkYjktYTY3OS1iZjkwOGUxZWQwMzkifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MDM0Njg3N31dLCJzZXNzaW9uX2lkIjoiMGI0ZTE3ODktMzFiYy00MDk4LWI5MmItZWZmN2IyYWY1Yjk2IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.e1iT2i3i93MTkRzgH32OBRtQnahRv-mtl0iKl4_tnfE';
+    const token = 'eyJhbGciOiJIUzI1NiIsImtpZCI6Imorc1l4RmljVjBqenZmL0kiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2djeXNyaHZ0Ym9iZXN2ZXpzZXZ0c3lnZy5zdXBlbnMuZ29uL2F0dG8vdjEiLCJzdWIiOiJhZjA1ZGQ1OS01MzIzLTRkYjktY3Y3OS1iZjkwOGIxZWQwMzkxLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwic3hwIjoxNzUwNDg0ODA4LCJpYXQiOjE3NTAzNDkyMDgsImVtYWlsIjoicml6ZXB1cnBsZTlAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InJpemVwdXJwbGU5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiSm9hbyBTYW50b3MiLCJwYXBlbCI6IkVORkVSTUVJUk8iLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImFmMDVkZDU5LTUzMjMtNGRiOS1hNjc5LWJmOTA4ZTFlZDAzOSJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzUwMzQ5MjA4fV0sInNlc3Npb25faWQiOiJkNTZjMDM2MS05OWFjLTRiNTAtYTE4NS1lYzc0ODQxZDgzNjYiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.IlabaIfmoivQsi7GESOwiWUqRGSklMotlcA5t58Eo2Y';
 
     beforeAll((done) => {
         app = express();
@@ -89,6 +92,7 @@ describe('📄 PDF - Geração de prontuário', () => {
                     }),
                 };
             }
+            return {};
         });
 
         (TriagemService.prototype.listTriagensByPaciente as jest.Mock).mockResolvedValue({
