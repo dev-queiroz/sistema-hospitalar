@@ -140,7 +140,7 @@ Para dúvidas ou suporte, entre em contato via:
 
 ## Licença
 
-Este projeto está licenciado sob a Apache 2.0 License.
+Este projeto está licenciado sob a Apache License 2.0.
 
 ---
 
