@@ -6,3 +6,7 @@ node_modules/
 /backend/dist
 prontuario.controller.spec.ts
 jest.config.js
+.idea
+combined.log
+error.log
+dist
