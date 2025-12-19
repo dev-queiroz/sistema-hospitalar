@@ -22,7 +22,7 @@ export abstract class Funcionario extends Paciente {
         escolaridade: Escolaridade,
         endereco: Endereco,
         telefone: string,
-        gruposRisco: string[],
+        gruposRisco: string[] = [],
         consentimentoLGPD: boolean,
         papel: Papeis,
         dataContratacao: Date,

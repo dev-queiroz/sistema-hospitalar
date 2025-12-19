@@ -1,5 +1,5 @@
 ### Criar Médico
-POST https://sistema-hospitalar.onrender.com/api/medicos
+POST http://localhost:3000/api/medicos
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -29,15 +29,15 @@ Authorization: Bearer {{token}}
 }
 
 ### Listar Médicos
-GET https://sistema-hospitalar.onrender.com/api/medicos
+GET http://localhost:3000/api/medicos
 Authorization: Bearer {{token}}
 
 ### Listar Médico por ID
-GET https://sistema-hospitalar.onrender.com/api/medicos/{{medico_id}}
+GET http://localhost:3000/api/medicos/{{medico_id}}
 Authorization: Bearer {{token}}
 
 ### Atualizar Médico
-PUT https://sistema-hospitalar.onrender.com/api/medicos/{{medico_id}}
+PUT http://localhost:3000/api/medicos/{{medico_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -48,11 +48,11 @@ Authorization: Bearer {{token}}
 }
 
 ### Deletar Médico
-DELETE https://sistema-hospitalar.onrender.com/api/medicos/{{medico_id}}
+DELETE http://localhost:3000/api/medicos/{{medico_id}}
 Authorization: Bearer {{token}}
 
 ### Login Médico (Obter Token para Testar Rotas como Médico)
-POST https://sistema-hospitalar.onrender.com/api/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -61,9 +61,9 @@ Content-Type: application/json
 }
 
 ### Obter Próprio Médico (como Médico)
-GET https://sistema-hospitalar.onrender.com/api/medicos/{{medico_id}}
+GET http://localhost:3000/api/medicos/{{medico_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Médicos (como Médico)
-GET https://sistema-hospitalar.onrender.com/api/medicos
+GET http://localhost:3000/api/medicos
 Authorization: Bearer {{token}}

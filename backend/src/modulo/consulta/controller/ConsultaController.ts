@@ -36,7 +36,7 @@ export class ConsultaController {
             res.status(201).json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
-                res.status(400).json({errors: error.errors});
+                res.status(400).json({errors: error.message});
             } else {
                 res.status(400).json({error: error.message});
             }
@@ -162,7 +162,7 @@ export class ConsultaController {
             res.json(data);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
-                res.status(400).json({errors: error.errors});
+                res.status(400).json({errors: error.message});
             } else {
                 res.status(400).json({error: error.message});
             }

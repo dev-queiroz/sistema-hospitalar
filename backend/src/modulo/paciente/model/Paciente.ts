@@ -16,7 +16,7 @@ export class Paciente extends BaseEntity {
     endereco: Endereco;
     telefone: string;
     email?: string;
-    gruposRisco: string[]; // Ex.: "IDOSO", "GESTANTE", "DIABETICO"
+    gruposRisco?: string[]; // Ex.: "IDOSO", "GESTANTE", "DIABETICO"
     consentimentoLGPD: boolean; // Consentimento para dados pessoais
     prontuarios: Prontuario[] = [];
     prescricoes: Prescricao[] = [];
@@ -33,7 +33,7 @@ export class Paciente extends BaseEntity {
         escolaridade: Escolaridade,
         endereco: Endereco,
         telefone: string,
-        gruposRisco: string[],
+        gruposRisco: string[] = [],
         consentimentoLGPD: boolean,
         email?: string
     ) {

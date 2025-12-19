@@ -1,0 +1,440 @@
+### 1. Login como Administrador Principal (Douglas Queiroz)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "queirozdouglas466@gmail.com",
+  "password": "Dv.23456"
+}
+
+> {%
+    client.global.set("admin_token", response.body.access_token);
+    client.global.set("admin_id", response.body.user_id || response.body.id);
+%}
+
+### 3. Criar UPA
+POST http://localhost:3000/api/unidades-saude
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "UPA Ceilândia",
+  "tipo": "UPA",
+  "cnes": "7654321",
+  "endereco": {
+    "logradouro": "QNM 17 Área Especial",
+    "numero": "s/n",
+    "bairro": "Ceilândia Sul",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "72220170"
+  },
+  "telefone": "6133735000",
+  "servicosEssenciais": ["Emergência 24h", "Observação", "Raio-X", "Laboratório"],
+  "servicosAmpliados": ["Pediatria", "Clínica Médica"]
+}
+
+> {%
+    client.global.set("upa_id", response.body.id);
+%}
+
+### 4. Criar UBS
+POST http://localhost:3000/api/unidades-saude
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "UBS 1 Taguatinga",
+  "tipo": "UBS",
+  "cnes": "7654323",
+  "endereco": {
+    "logradouro": "CSB 02 Lote 01",
+    "numero": "s/n",
+    "bairro": "Taguatinga Sul",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "72015020"
+  },
+  "telefone": "6135698000",
+  "servicosEssenciais": ["Atenção Básica", "Vacinação", "Pré-natal", "Hiperdia"]
+}
+
+> {%
+    client.global.set("ubs_id", response.body.id);
+%}
+
+### 5. Criar Médico - Hospital
+POST http://localhost:3000/api/medicos
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Dr. Rafael Mendes",
+  "cpf": "98765432100",
+  "cns": "987654321000111",
+  "dataNascimento": "1978-05-12",
+  "sexo": "MASCULINO",
+  "racaCor": "BRANCA",
+  "escolaridade": "POS_GRADUACAO",
+  "endereco": {
+    "logradouro": "SQN 315 Bloco H",
+    "numero": "Apt 502",
+    "bairro": "Asa Norte",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "70774080"
+  },
+  "telefone": "61988887777",
+  "email": "rafael.mendes@sus.local",
+  "senha": "Medico@2025",
+  "dataContratacao": "2022-01-15",
+  "crm": "45678-DF",
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71"
+}
+
+> {%
+    client.global.set("medico_hospital_id", response.body.id);
+%}
+
+### 6. Criar Médico - UPA
+POST http://localhost:3000/api/medicos
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Dra. Luana Ferreira",
+  "cpf": "87654321099",
+  "cns": "876543210991234",
+  "dataNascimento": "1983-11-20",
+  "sexo": "FEMININO",
+  "racaCor": "PARDA",
+  "escolaridade": "POS_GRADUACAO",
+  "endereco": {
+    "logradouro": "QNM 28",
+    "numero": "Casa 45",
+    "bairro": "Ceilândia",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "72220280"
+  },
+  "telefone": "61999998888",
+  "email": "luana.ferreira@sus.local",
+  "senha": "Medica@2025",
+  "dataContratacao": "2023-06-10",
+  "crm": "98765-DF",
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+> {%
+    client.global.set("medico_upa_id", response.body.id);
+%}
+
+### 7. Criar Enfermeiro - UPA
+POST http://localhost:3000/api/enfermeiros
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Enf. Camila Oliveira",
+  "cpf": "76543210988",
+  "cns": "765432109881234",
+  "dataNascimento": "1992-03-08",
+  "sexo": "FEMININO",
+  "racaCor": "PARDA",
+  "escolaridade": "SUPERIOR",
+  "endereco": {
+    "logradouro": "QNN 18",
+    "numero": "Conjunto F",
+    "bairro": "Ceilândia Norte",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "72225180"
+  },
+  "telefone": "61977776666",
+  "email": "camila.enf@sus.local",
+  "senha": "Enf@2025",
+  "dataContratacao": "2024-02-20",
+  "coren": "567890-DF",
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+> {%
+    client.global.set("enf_upa_id", response.body.id);
+%}
+
+### 8. Criar Enfermeiro - UBS
+POST http://localhost:3000/api/enfermeiros
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Enf. Thiago Souza",
+  "cpf": "65432109877",
+  "cns": "654321098771234",
+  "dataNascimento": "1989-09-15",
+  "sexo": "MASCULINO",
+  "racaCor": "PRETA",
+  "escolaridade": "SUPERIOR",
+  "endereco": {
+    "logradouro": "CSB 08",
+    "numero": "Lote 03",
+    "bairro": "Taguatinga Sul",
+    "cidade": "Brasília",
+    "estado": "DF",
+    "cep": "72025800"
+  },
+  "telefone": "61966665555",
+  "email": "thiago.enf@sus.local",
+  "senha": "Enf@2025",
+  "dataContratacao": "2023-11-05",
+  "coren": "123456-DF",
+  "unidadeSaudeId": "{{ubs_id}}"
+}
+
+> {%
+    client.global.set("enf_ubs_id", response.body.id);
+%}
+
+### 9. Criar 8 Pacientes (com foco em respiratórios para surto)
+
+# Paciente 1 - Recorrente respiratório (Hospital)
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "José Antonio Silva",
+  "cpf": "11122233344",
+  "cns": "111222333444555",
+  "dataNascimento": "1970-07-18",
+  "sexo": "MASCULINO",
+  "racaCor": "PARDA",
+  "escolaridade": "MEDIO",
+  "endereco": { "logradouro": "Asa Norte", "numero": "100", "bairro": "Asa Norte", "cidade": "Brasília", "estado": "DF", "cep": "70700000" },
+  "telefone": "61911112222",
+  "email": "jose.silva@email.com",
+  "gruposRisco": ["DIABETICO", "IDOSO"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71"
+}
+
+> {% client.global.set("pac_recorrente_id", response.body.id); %}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Maria Clara Ramos",
+  "cpf": "22233344455",
+  "cns": "222333444555666",
+  "dataNascimento": "2015-04-22",
+  "sexo": "FEMININO",
+  "racaCor": "BRANCA",
+  "escolaridade": "SEM_ESCOLARIDADE",
+  "endereco": { "logradouro": "Ceilândia", "numero": "50", "bairro": "Ceilândia", "cidade": "Brasília", "estado": "DF", "cep": "72200000" },
+  "telefone": "61922223333",
+  "gruposRisco": ["CRIANCA"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTcxNTc1LCJpYXQiOjE3NjYxNjc5NzUsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNjc5NzV9XSwic2Vzc2lvbl9pZCI6IjAyMDA1NTNjLTAwYjMtNGVjZC04YzI4LTY2Mjk5MTlhNmU3YiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J_27u6rN5GrvXOcM-9zPH0wYaomPBkHDkqRc-s8nui0
+Content-Type: application/json
+
+{
+  "nome": "Pedro Henrique Costa",
+  "cpf": "33344455566",
+  "cns": "333444555666777",
+  "dataNascimento": "1965-12-01",
+  "sexo": "MASCULINO",
+  "racaCor": "PARDA",
+  "escolaridade": "FUNDAMENTAL",
+  "endereco": { "logradouro": "Taguatinga", "numero": "200", "bairro": "Taguatinga", "cidade": "Brasília", "estado": "DF", "cep": "72000000" },
+  "telefone": "61933334444",
+  "gruposRisco": ["HIPERTENSO", "DIABETICO", "IDOSO"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{ubs_id}}"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "nome": "Ana Beatriz Lima",
+  "cpf": "44455566677",
+  "cns": "444555666777888",
+  "dataNascimento": "1998-08-30",
+  "sexo": "FEMININO",
+  "racaCor": "PRETA",
+  "escolaridade": "SUPERIOR",
+  "endereco": { "logradouro": "Asa Sul", "numero": "300", "bairro": "Asa Sul", "cidade": "Brasília", "estado": "DF", "cep": "70300000" },
+  "telefone": "61944445555",
+  "gruposRisco": [],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "nome": "Lucas Fernandes",
+  "cpf": "55566677788",
+  "cns": "555666777888999",
+  "dataNascimento": "1985-02-14",
+  "sexo": "MASCULINO",
+  "racaCor": "BRANCA",
+  "escolaridade": "MEDIO",
+  "endereco": { "logradouro": "Ceilândia", "numero": "400", "bairro": "Ceilândia", "cidade": "Brasília", "estado": "DF", "cep": "72200000" },
+  "telefone": "61955556666",
+  "gruposRisco": ["ASMATICO"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "nome": "Sofia Almeida",
+  "cpf": "66677788899",
+  "cns": "666777888999000",
+  "dataNascimento": "2018-10-05",
+  "sexo": "FEMININO",
+  "racaCor": "PARDA",
+  "escolaridade": "SEM_ESCOLARIDADE",
+  "endereco": { "logradouro": "Taguatinga", "numero": "500", "bairro": "Taguatinga", "cidade": "Brasília", "estado": "DF", "cep": "72000000" },
+  "telefone": "61966667777",
+  "gruposRisco": ["CRIANCA"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "nome": "Gabriel Santos",
+  "cpf": "77788899900",
+  "cns": "777888999000111",
+  "dataNascimento": "1975-06-25",
+  "sexo": "MASCULINO",
+  "racaCor": "BRANCA",
+  "escolaridade": "SUPERIOR",
+  "endereco": { "logradouro": "Asa Norte", "numero": "600", "bairro": "Asa Norte", "cidade": "Brasília", "estado": "DF", "cep": "70700000" },
+  "telefone": "61977778888",
+  "gruposRisco": ["HIPERTENSO"],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71"
+}
+
+###
+POST http://localhost:3000/api/pacientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "nome": "Isabela Rocha",
+  "cpf": "88899900011",
+  "cns": "888999000111222",
+  "dataNascimento": "1990-01-17",
+  "sexo": "FEMININO",
+  "racaCor": "PARDA",
+  "escolaridade": "MEDIO",
+  "endereco": { "logradouro": "Ceilândia", "numero": "700", "bairro": "Ceilândia", "cidade": "Brasília", "estado": "DF", "cep": "72200000" },
+  "telefone": "61988889999",
+  "gruposRisco": [],
+  "consentimentoLGPD": true,
+  "unidadeSaudeId": "{{upa_id}}"
+}
+
+### 10. Criar várias Triagens, Consultas e Prescrições (foco em respiratórias para surto)
+
+# Triagem 1 - Respiratória (Paciente recorrente)
+POST http://localhost:3000/api/triagens
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+Content-Type: application/json
+
+{
+  "pacienteId": "{{pac_recorrente_id}}",
+  "unidadeSaudeId": "{{upa_id}}",
+  "enfermeiroId": "{{enf_upa_id}}",
+  "sinaisVitais": {
+    "pressaoArterialSistolica": 140,
+    "pressaoArterialDiastolica": 90,
+    "frequenciaCardiaca": 95,
+    "frequenciaRespiratoria": 24,
+    "saturacaoOxigenio": 92,
+    "temperatura": 37.8,
+    "nivelDor": 5,
+    "estadoConsciente": true
+  },
+  "queixaPrincipal": "Falta de ar e tosse com expectoração"
+}
+
+### Login como medico
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "rafael.mendes@sus.local",
+  "password": "Medico@2025"
+}
+
+### Consulta 1 - J45 (Asma)
+POST http://localhost:3000/api/consultas
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiYzRjNTE4Yi0zZjQzLTQyMTUtYjQzNS0zYjc4MGNlOGY1N2IiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc3NTE3LCJpYXQiOjE3NjYxNzM5MTcsImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6IkRyLiBSYWZhZWwgTWVuZGVzIiwicGFwZWwiOiJNRURJQ08iLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImJjNGM1MThiLTNmNDMtNDIxNS1iNDM1LTNiNzgwY2U4ZjU3YiJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzY2MTczOTE3fV0sInNlc3Npb25faWQiOiJkMDQ4YzRjYS1iOWJhLTRiMjItODBlZS0xYWRiNzU2MTc0YTUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.5Sajq4RVWvp7rDn8gLAaeQgqOT8mdIvpL3qCbjrEEp0
+Content-Type: application/json
+
+{
+  "pacienteId": "afe534f5-6e88-4a12-8b90-f2966ad471ee",
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71",
+  "observacoes": "Crise asmática moderada. Nebulização com salbutamol e ipratrópio. Prescrito prednisona.",
+  "cid10": "J45.9"
+}
+
+### Prescrição 1
+POST http://localhost:3000/api/prescricoes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiYzRjNTE4Yi0zZjQzLTQyMTUtYjQzNS0zYjc4MGNlOGY1N2IiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc3NTE3LCJpYXQiOjE3NjYxNzM5MTcsImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6IkRyLiBSYWZhZWwgTWVuZGVzIiwicGFwZWwiOiJNRURJQ08iLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImJjNGM1MThiLTNmNDMtNDIxNS1iNDM1LTNiNzgwY2U4ZjU3YiJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzY2MTczOTE3fV0sInNlc3Npb25faWQiOiJkMDQ4YzRjYS1iOWJhLTRiMjItODBlZS0xYWRiNzU2MTc0YTUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.5Sajq4RVWvp7rDn8gLAaeQgqOT8mdIvpL3qCbjrEEp0
+Content-Type: application/json
+
+{
+  "pacienteId": "afe534f5-6e88-4a12-8b90-f2966ad471ee",
+  "unidadeSaudeId": "804b0671-f056-4a9f-8d8e-efa8768bdb71",
+  "detalhesPrescricao": "Prednisona 40mg/dia por 5 dias. Budesonida/Formoterol 200/6 2 puffs 12/12h.",
+  "cid10": "J45.9"
+}
+
+### 11. Testar módulo IA (após inserir dados)
+
+# Relatório de surto respiratório geral
+GET http://localhost:3000/api/ia/surto
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+
+### Relatório de surto na UPA
+GET http://localhost:3000/api/ia/surto?unidade_saude_id=60436605-2c26-4fc5-b489-0fe964bb446e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+
+### Análise de paciente recorrente (precisa de mais histórico – adicione mais consultas se necessário)
+GET http://localhost:3000/api/ia/paciente/afe534f5-6e88-4a12-8b90-f2966ad471ee/recorrente
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiYzRjNTE4Yi0zZjQzLTQyMTUtYjQzNS0zYjc4MGNlOGY1N2IiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc3NTE3LCJpYXQiOjE3NjYxNzM5MTcsImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoicmFmYWVsLm1lbmRlc0BzdXMubG9jYWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tZSI6IkRyLiBSYWZhZWwgTWVuZGVzIiwicGFwZWwiOiJNRURJQ08iLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImJjNGM1MThiLTNmNDMtNDIxNS1iNDM1LTNiNzgwY2U4ZjU3YiJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzY2MTczOTE3fV0sInNlc3Npb25faWQiOiJkMDQ4YzRjYS1iOWJhLTRiMjItODBlZS0xYWRiNzU2MTc0YTUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.5Sajq4RVWvp7rDn8gLAaeQgqOT8mdIvpL3qCbjrEEp0
+
+### Relatório de triagens por unidade (UPA)
+GET http://localhost:3000/api/ia/triagens/60436605-2c26-4fc5-b489-0fe964bb446e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY
+
+### Listar últimos relatórios gerados
+GET http://localhost:3000/api/ia/relatorios?limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IlFPQzlqMXFKZzZZSDdqKzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lpZXJ4ZXVwcWhub3Fxc2tzZ3hlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlZjM1ZTEyNy0xZDIwLTRkYTEtYjg2OS01YWYwZWQ2NzRjMDAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY2MTc1NzY2LCJpYXQiOjE3NjYxNzIxNjYsImVtYWlsIjoicXVlaXJvemRvdWdsYXM0NjZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6InF1ZWlyb3pkb3VnbGFzNDY2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJub21lIjoiRG91Z2xhcyBRdWVpcm96IiwicGFwZWwiOiJBRE1JTklTVFJBRE9SX1BSSU5DSVBBTCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZWYzNWUxMjctMWQyMC00ZGExLWI4NjktNWFmMGVkNjc0YzAwIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjYxNzIxNjZ9XSwic2Vzc2lvbl9pZCI6IjQxOWYzMDc1LTI0MDQtNDkxMi1hYmIxLTg5OWUwZTc3ZjdiZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.lTt-wjAAsHFxtXD-DSTunmxDHop3HkSBnbEy_byiMCY

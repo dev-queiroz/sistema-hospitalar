@@ -1,5 +1,5 @@
 ### Criar Consulta (Médico)
-POST https://sistema-hospitalar.onrender.com/api/consultas
+POST http://localhost:3000/api/consultas
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -11,23 +11,23 @@ Authorization: Bearer {{token}}
 }
 
 ### Obter Consulta (Médico)
-GET https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
+GET http://localhost:3000/api/consultas/{{consulta_id}}
 Authorization: Bearer {{token}}
 
 ### Obter Consulta (Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
+GET http://localhost:3000/api/consultas/{{consulta_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Consultas por Paciente (Médico)
-GET https://sistema-hospitalar.onrender.com/api/consultas/pacientes/{{paciente_id}}
+GET http://localhost:3000/api/consultas/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Consultas por Paciente (Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/consultas/pacientes/{{paciente_id}}
+GET http://localhost:3000/api/consultas/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Atualizar Consulta (Médico)
-PUT https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
+PUT http://localhost:3000/api/consultas/{{consulta_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -37,17 +37,17 @@ Authorization: Bearer {{token}}
 }
 
 ### Deletar Consulta (Médico)
-DELETE https://sistema-hospitalar.onrender.com/api/consultas/{{consulta_id}}
+DELETE http://localhost:3000/api/consultas/{{consulta_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Consultas por Profissional (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/consultas/profissional/{{medico_id}}
+GET http://localhost:3000/api/consultas/profissional/{{medico_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Atendimentos Ativos por Unidade (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/consultas/unidade/{{unidade_saude_id}}/atendimentos-ativos
+GET http://localhost:3000/api/consultas/unidade/{{unidade_saude_id}}/atendimentos-ativos
 Authorization: Bearer {{token}}
 
 ### Listar Consultas por Unidade (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/consultas/unidade/{{unidade_saude_id}}
+GET http://localhost:3000/api/consultas/unidade/{{unidade_saude_id}}
 Authorization: Bearer {{token}}

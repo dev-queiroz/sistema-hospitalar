@@ -14,7 +14,7 @@ export class Enfermeiro extends Funcionario {
         escolaridade: Escolaridade,
         endereco: Endereco,
         telefone: string,
-        gruposRisco: string[],
+        gruposRisco: string[] = [],
         consentimentoLGPD: boolean,
         dataContratacao: Date,
         coren: string,

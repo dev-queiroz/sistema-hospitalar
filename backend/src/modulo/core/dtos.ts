@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {Escolaridade, NivelGravidade, RacaCor, Sexo, TipoUnidadeSaude} from './model/Enums';
 
-const GRUPOS_RISCO_PERMITIDOS = ['IDOSO', 'GESTANTE', 'DIABETICO', 'HIPERTENSO', 'IMUNOSSUPRIMIDO', 'CRIANCA'];
+const GRUPOS_RISCO_PERMITIDOS = ['IDOSO', 'GESTANTE', 'DIABETICO', 'HIPERTENSO', 'IMUNOSSUPRIMIDO', 'CRIANCA', 'OBESO', 'ASMATICO'];
 
 export const EnderecoDTO = z.object({
     logradouro: z.string().min(1, 'Logradouro é obrigatório'),
@@ -39,16 +39,16 @@ export const CreatePacienteDTO = z.object({
     cpf: z.string().regex(/^\d{11}$/, 'CPF inválido (deve ter 11 dígitos)'),
     cns: z.string().regex(/^\d{15}$/, 'CNS inválido (deve ter 15 dígitos)'),
     dataNascimento: z.string().refine((val) => !isNaN(Date.parse(val)), {message: 'Data de nascimento inválida'}),
-    sexo: z.nativeEnum(Sexo, {errorMap: () => ({message: 'Sexo inválido'})}),
-    racaCor: z.nativeEnum(RacaCor, {errorMap: () => ({message: 'Raça/Cor inválida'})}),
-    escolaridade: z.nativeEnum(Escolaridade, {errorMap: () => ({message: 'Escolaridade inválida'})}),
+    sexo: z.nativeEnum(Sexo, {error: 'Sexo inválido'}),
+    racaCor: z.nativeEnum(RacaCor, {error: 'Raça/Cor inválida'}),
+    escolaridade: z.nativeEnum(Escolaridade, {error: 'Escolaridade inválida'}),
     endereco: EnderecoDTO,
     telefone: z.string().regex(/^\d{10,11}$/, 'Telefone inválido (deve ter 10 ou 11 dígitos)'),
     email: z.string().email('Email inválido').optional(),
     gruposRisco: z
         .array(z.enum(GRUPOS_RISCO_PERMITIDOS as any))
-        .min(1, 'Pelo menos um grupo de risco é obrigatório'),
-    consentimentoLGPD: z.boolean({required_error: 'Consentimento LGPD é obrigatório'}),
+        .optional(),
+    consentimentoLGPD: z.boolean({error: 'Consentimento LGPD é obrigatório'}),
     unidadeSaudeId: z.string().uuid('ID da unidade de saúde inválido').optional(),
 });
 
@@ -60,9 +60,9 @@ export const UpdatePacienteDTO = z.object({
         .string()
         .refine((val) => !isNaN(Date.parse(val)), {message: 'Data de nascimento inválida'})
         .optional(),
-    sexo: z.nativeEnum(Sexo, {errorMap: () => ({message: 'Sexo inválido'})}).optional(),
-    racaCor: z.nativeEnum(RacaCor, {errorMap: () => ({message: 'Raça/Cor inválida'})}).optional(),
-    escolaridade: z.nativeEnum(Escolaridade, {errorMap: () => ({message: 'Escolaridade inválida'})}).optional(),
+    sexo: z.nativeEnum(Sexo, { message: 'Sexo inválido' }).optional(),
+    racaCor: z.nativeEnum(RacaCor, { message: 'Raça/Cor inválida' }).optional(),
+    escolaridade: z.nativeEnum(Escolaridade, { message: 'Escolaridade inválida' }).optional(),
     endereco: EnderecoDTO.optional(),
     telefone: z.string().regex(/^\d{10,11}$/, 'Telefone inválido (deve ter 10 ou 11 dígitos)').optional(),
     email: z.string().email('Email inválido').optional().or(z.literal('')),
@@ -70,7 +70,7 @@ export const UpdatePacienteDTO = z.object({
         .array(z.enum(GRUPOS_RISCO_PERMITIDOS as any))
         .min(1, 'Pelo menos um grupo de risco é obrigatório')
         .optional(),
-    consentimentoLGPD: z.boolean({required_error: 'Consentimento LGPD é obrigatório'}).optional(),
+    consentimentoLGPD: z.boolean({error: 'Consentimento LGPD é obrigatório'}).optional(),
     unidadeSaudeId: z.string().uuid('ID da unidade de saúde inválido').optional(),
 });
 
@@ -125,12 +125,12 @@ export const CreateProntuarioDTO = z.object({
     pacienteId: z.string().uuid('ID do paciente inválido'),
     unidadeSaudeId: z.string().uuid('ID da unidade de saúde inválido'),
     descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
-    dadosAnonimizados: z.record(z.string()).optional(),
+    dadosAnonimizados: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const UpdateProntuarioDTO = z.object({
     descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres').optional(),
-    dadosAnonimizados: z.record(z.string()).optional(),
+    dadosAnonimizados: z.record(z.string(), z.any()).optional(),
 });
 
 // 6. Prescricao DTOs
@@ -171,13 +171,10 @@ const SinaisVitaisSchema = z.object({
     estadoConsciente: z.boolean(),
 });
 
-const NivelGravidadeSchema = z.enum([
-    NivelGravidade.Vermelho,
-    NivelGravidade.Laranja,
-    NivelGravidade.Amarelo,
-    NivelGravidade.Verde,
-    NivelGravidade.Azul,
-], {errorMap: () => ({message: 'Nível de gravidade inválido'})});
+const NivelGravidadeSchema = z.nativeEnum(NivelGravidade).refine(
+    (val) => Object.values(NivelGravidade).includes(val),
+    { message: 'Nível de gravidade inválido' }
+);
 
 export const CreateTriagemDTO = z.object({
     pacienteId: z.string().uuid('ID do paciente inválido'),

@@ -1,5 +1,5 @@
 ### Criar Enfermeiro
-POST https://sistema-hospitalar.onrender.com/api/enfermeiros
+POST http://localhost:3000/api/enfermeiros
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -28,17 +28,17 @@ Authorization: Bearer {{token}}
 }
 
 ### Obter Enfermeiro
-GET https://sistema-hospitalar.onrender.com/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
+GET http://localhost:3000/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
 Authorization: Bearer {{token}}
 
 ### Listar Enfermeiros
-GET https://sistema-hospitalar.onrender.com/api/enfermeiros
+GET http://localhost:3000/api/enfermeiros
 Authorization: Bearer {{token}}
 
 ###
 
 ### Atualizar Enfermeiro
-PUT https://sistema-hospitalar.onrender.com/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
+PUT http://localhost:3000/api/enfermeiros/a444cffe-cd41-4011-b74b-83e6f0cf7710
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -49,11 +49,11 @@ Authorization: Bearer {{token}}
 }
 
 ### Deletar Enfermeiro
-DELETE https://sistema-hospitalar.onrender.com/api/enfermeiros/{{enfermeiro_id}}
+DELETE http://localhost:3000/api/enfermeiros/{{enfermeiro_id}}
 Authorization: Bearer {{token}}
 
 ### Login Enfermeiro (Obter Token para Testar Rotas como Enfermeiro)
-POST https://sistema-hospitalar.onrender.com/api/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -62,5 +62,5 @@ Content-Type: application/json
 }
 
 ### Obter Próprio Enfermeiro (como Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/enfermeiros/{{enfermeiro_id}}
+GET http://localhost:3000/api/enfermeiros/{{enfermeiro_id}}
 Authorization: Bearer {{token}}

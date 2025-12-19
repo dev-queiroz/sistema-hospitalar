@@ -14,7 +14,7 @@ export class Medico extends Funcionario {
         escolaridade: Escolaridade,
         endereco: Endereco,
         telefone: string,
-        gruposRisco: string[],
+        gruposRisco: string[] = [],
         consentimentoLGPD: boolean,
         dataContratacao: Date,
         crm: string,

@@ -43,12 +43,20 @@ export class ProntuarioController {
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
 
             logger.info('Creating prontuário', {usuarioId, pacienteId: validated.pacienteId});
+            
+            // Ensure dadosAnonimizados is properly typed as Record<string, string> | undefined
+            const dadosAnonimizados = validated.dadosAnonimizados 
+                ? Object.fromEntries(
+                    Object.entries(validated.dadosAnonimizados).map(([key, value]) => [key, String(value)])
+                )
+                : undefined;
+
             const {data, error} = await this.prontuarioService.createProntuario(
                 validated.pacienteId,
                 usuarioId,
                 validated.unidadeSaudeId,
                 validated.descricao,
-                validated.dadosAnonimizados
+                dadosAnonimizados as Record<string, string> | undefined
             );
 
             if (error || !data) {
@@ -60,7 +68,7 @@ export class ProntuarioController {
         } catch (error: any) {
             logger.error('Error in create', {error: error?.message});
             if (error instanceof z.ZodError) {
-                res.status(400).json({errors: error?.errors});
+                res.status(400).json({errors: error?.message});
             } else {
                 res.status(400).json({error: error?.message});
             }
@@ -149,7 +157,7 @@ export class ProntuarioController {
         } catch (err: any) {
             logger.error('Error in update', {error: err.message});
             if (err instanceof z.ZodError) {
-                res.status(400).json({errors: err.errors});
+                res.status(400).json({errors: err.message});
             } else {
                 res.status(400).json({error: err.message});
             }

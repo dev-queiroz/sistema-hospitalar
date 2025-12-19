@@ -69,7 +69,9 @@ export class PrioridadeService {
             if (idade > 65 || idade < 5) pontuacao += 20;
 
             // 4. Grupos de risco
-            const numComorbidades = paciente.gruposRisco.filter(g => COMORBIDADES_GRAVES.includes(g.toUpperCase())).length;
+            const numComorbidades = paciente.gruposRisco
+                ? paciente.gruposRisco.filter(g => COMORBIDADES_GRAVES.includes(g.toUpperCase())).length
+                : 0;
             pontuacao += Math.min(numComorbidades * 10, 30); // limite de 30 pts
 
             // 5. Queixas urgentes moderadas

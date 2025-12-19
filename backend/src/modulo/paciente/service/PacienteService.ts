@@ -7,7 +7,7 @@ import {Prescricao} from '../../prescricao/model/Prescricao';
 import {Consulta} from '../../consulta/model/Consulta';
 
 const supabase = supabaseClient;
-const GRUPOS_RISCO_PERMITIDOS = ['IDOSO', 'GESTANTE', 'DIABETICO', 'HIPERTENSO', 'IMUNOSSUPRIMIDO', 'CRIANCA'];
+const GRUPOS_RISCO_PERMITIDOS = ['IDOSO', 'GESTANTE', 'DIABETICO', 'HIPERTENSO', 'IMUNOSSUPRIMIDO', 'CRIANCA', 'OBESO', 'ASMATICO'];
 
 export class PacienteService {
     async createPaciente(
@@ -20,9 +20,9 @@ export class PacienteService {
         escolaridade: Escolaridade,
         endereco: Endereco,
         telefone: string,
-        gruposRisco: string[],
         consentimentoLGPD: boolean,
         usuarioId: string,
+        gruposRisco?: string[],
         email?: string,
         unidadeSaudeId?: string
     ): Promise<{ data: Paciente | null, error: Error | null }> {
@@ -43,7 +43,6 @@ export class PacienteService {
                 !endereco.estado ||
                 !endereco.cep ||
                 !telefone ||
-                !gruposRisco ||
                 consentimentoLGPD === undefined
             ) {
                 throw new Error('Campos obrigatórios não preenchidos');
@@ -54,7 +53,7 @@ export class PacienteService {
             if (!/^\d{8}$/.test(endereco.cep)) throw new Error('CEP inválido (deve ter 8 dígitos)');
             if (email && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) throw new Error('Email inválido');
             if (!consentimentoLGPD) throw new Error('Consentimento LGPD é obrigatório para cadastro');
-            if (!gruposRisco.every((g) => GRUPOS_RISCO_PERMITIDOS.includes(g))) {
+            if (gruposRisco && gruposRisco.length > 0 && !gruposRisco.every((g) => GRUPOS_RISCO_PERMITIDOS.includes(g))) {
                 throw new Error(`Grupos de risco inválidos. Valores permitidos: ${GRUPOS_RISCO_PERMITIDOS.join(', ')}`);
             }
 

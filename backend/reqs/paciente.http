@@ -1,5 +1,5 @@
 ### Criar Paciente (Enfermeiro)
-POST https://sistema-hospitalar.onrender.com/api/pacientes
+POST http://localhost:3000/api/pacientes
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -29,7 +29,7 @@ Authorization: Bearer {{token}}
 }
 
 ### Criar Paciente (Administrador)
-POST https://sistema-hospitalar.onrender.com/api/pacientes
+POST http://localhost:3000/api/pacientes
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -57,31 +57,31 @@ Authorization: Bearer {{token}}
 }
 
 ### Obter Paciente (Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Obter Paciente (Médico)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Obter Paciente (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
+GET http://localhost:3000/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Listar Pacientes (Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/pacientes
+GET http://localhost:3000/api/pacientes
 Authorization: Bearer {{token}}
 
 ### Listar Pacientes (Médico)
-GET https://sistema-hospitalar.onrender.com/api/pacientes
+GET http://localhost:3000/api/pacientes
 Authorization: Bearer {{token}}
 
 ### Listar Pacientes (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/pacientes
+GET http://localhost:3000/api/pacientes
 Authorization: Bearer {{token}}
 
 ### Atualizar Paciente (Enfermeiro)
-PUT https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
+PUT http://localhost:3000/api/pacientes/{{paciente_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -95,7 +95,7 @@ Authorization: Bearer {{token}}
 }
 
 ### Atualizar Paciente (Administrador)
-PUT https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id_2}}
+PUT http://localhost:3000/api/pacientes/{{paciente_id_2}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -108,21 +108,21 @@ Authorization: Bearer {{token}}
 }
 
 ### Deletar Paciente (Enfermeiro)
-DELETE https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}
+DELETE http://localhost:3000/api/pacientes/{{paciente_id}}
 Authorization: Bearer {{token}}
 
 ### Deletar Paciente (Administrador)
-DELETE https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id_2}}
+DELETE http://localhost:3000/api/pacientes/{{paciente_id_2}}
 Authorization: Bearer {{token}}
 
 ### Obter Histórico do Paciente (Enfermeiro)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer {{token}}
 
 ### Obter Histórico do Paciente (Médico)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer {{token}}
 
 ### Obter Histórico do Paciente (Administrador)
-GET https://sistema-hospitalar.onrender.com/api/pacientes/{{paciente_id}}/historico
+GET http://localhost:3000/api/pacientes/{{paciente_id}}/historico
 Authorization: Bearer {{token}}

@@ -14,13 +14,13 @@ export class ConsultaService {
 
     async createConsulta(
         pacienteId: string,
-        profissionalId: string,
+        medicoId: string,
         unidadeSaudeId: string,
         observacoes: string,
         cid10?: string
     ): Promise<{ data: Consulta | null, error: Error | null }> {
         try {
-            if (!pacienteId || !profissionalId || !unidadeSaudeId || !observacoes) {
+            if (!pacienteId || !medicoId || !unidadeSaudeId || !observacoes) {
                 throw new Error('Campos obrigatórios não preenchidos');
             }
             if (observacoes.length < 10) {
@@ -52,7 +52,7 @@ export class ConsultaService {
             const {data: profissional} = await supabase
                 .from('funcionario')
                 .select('papel')
-                .eq('id', profissionalId)
+                .eq('id', medicoId)
                 .eq('ativo', true)
                 .single();
             if (!profissional || (profissional.papel !== Papeis.MEDICO && profissional.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
@@ -66,7 +66,7 @@ export class ConsultaService {
                 .from('consulta')
                 .insert({
                     paciente_id: pacienteId,
-                    profissional_id: profissionalId,
+                    medico_id: medicoId,
                     unidade_saude_id: unidadeSaudeId,
                     observacoes,
                     cid10,
@@ -82,7 +82,7 @@ export class ConsultaService {
             const prontuarioDescricao = `Consulta realizada em ${new Date().toLocaleDateString('pt-BR')}. Observações: ${observacoes}${cid10 ? `. CID-10: ${cid10}` : ''}`;
             const {data: prontuario, error: prontuarioError} = await this.prontuarioService.createProntuario(
                 pacienteId,
-                profissionalId,
+                medicoId,
                 unidadeSaudeId,
                 prontuarioDescricao,
                 cid10 ? {cid10} : {}
@@ -94,11 +94,11 @@ export class ConsultaService {
             const consulta = new Consulta(
                 data.id,
                 data.paciente_id,
-                data.profissional_id,
+                data.medico_id,
                 data.unidade_saude_id,
+                new Date(data.data_consulta),
                 data.observacoes,
                 data.cid10,
-                data.data_consulta
             );
             return {data: consulta, error: null};
         } catch (error) {
@@ -129,7 +129,7 @@ export class ConsultaService {
             const consultas = data.map((d: any) => new Consulta(
                 d.id,
                 d.paciente_id,
-                d.profissional_id,
+                d.medico_id,
                 d.unidade_saude_id,
                 d.observacoes,
                 d.cid10,
@@ -165,7 +165,7 @@ export class ConsultaService {
             const consulta = new Consulta(
                 data.id,
                 data.paciente_id,
-                data.profissional_id,
+                data.medico_id,
                 data.unidade_saude_id,
                 data.observacoes,
                 data.cid10,
@@ -212,7 +212,7 @@ export class ConsultaService {
             const consultas = data.map((d: any) => new Consulta(
                 d.id,
                 d.paciente_id,
-                d.profissional_id,
+                d.medico_id,
                 d.unidade_saude_id,
                 d.observacoes,
                 d.cid10,
@@ -224,7 +224,7 @@ export class ConsultaService {
         }
     }
 
-    async listConsultasByProfissional(profissionalId: string, adminId: string): Promise<{
+    async listConsultasByProfissional(medicoId: string, adminId: string): Promise<{
         data: Consulta[],
         error: Error | null
     }> {
@@ -242,7 +242,7 @@ export class ConsultaService {
             const {data: profissional} = await supabase
                 .from('funcionario')
                 .select('id')
-                .eq('id', profissionalId)
+                .eq('id', medicoId)
                 .eq('ativo', true)
                 .single();
             if (!profissional) throw new Error('Profissional não encontrado');
@@ -250,7 +250,7 @@ export class ConsultaService {
             const {data, error} = await supabase
                 .from('consulta')
                 .select('*')
-                .eq('profissional_id', profissionalId)
+                .eq('medico_id', medicoId)
                 .eq('ativo', true)
                 .limit(100);
 
@@ -259,7 +259,7 @@ export class ConsultaService {
             const consultas = data.map((d: any) => new Consulta(
                 d.id,
                 d.paciente_id,
-                d.profissional_id,
+                d.medico_id,
                 d.unidade_saude_id,
                 d.observacoes,
                 d.cid10,
@@ -306,7 +306,7 @@ export class ConsultaService {
             const consultas = data.map((d: any) => new Consulta(
                 d.id,
                 d.paciente_id,
-                d.profissional_id,
+                d.medico_id,
                 d.unidade_saude_id,
                 d.observacoes,
                 d.cid10,
@@ -352,7 +352,7 @@ export class ConsultaService {
             const consultas = data.map((d: any) => new Consulta(
                 d.id,
                 d.paciente_id,
-                d.profissional_id,
+                d.medico_id,
                 d.unidade_saude_id,
                 d.observacoes,
                 d.cid10,
@@ -368,10 +368,10 @@ export class ConsultaService {
         id: string,
         observacoes?: string,
         cid10?: string,
-        profissionalId?: string
+        medicoId?: string
     ): Promise<{ data: Consulta | null, error: Error | null }> {
         try {
-            if (!profissionalId) throw new Error('ID do profissional é obrigatório');
+            if (!medicoId) throw new Error('ID do profissional é obrigatório');
             if (observacoes && observacoes.length < 10) {
                 throw new Error('Observações devem ter pelo menos 10 caracteres');
             }
@@ -382,7 +382,7 @@ export class ConsultaService {
             const {data: profissional} = await supabase
                 .from('funcionario')
                 .select('papel')
-                .eq('id', profissionalId)
+                .eq('id', medicoId)
                 .eq('ativo', true)
                 .single();
             if (!profissional || profissional.papel !== Papeis.MEDICO) {
@@ -416,7 +416,7 @@ export class ConsultaService {
                 const prontuarioDescricao = `Consulta atualizada em ${new Date().toLocaleDateString('pt-BR')}. Observações: ${observacoes || consulta.observacoes}${cid10 ? `. CID-10: ${cid10}` : ''}`;
                 const {data: prontuario, error: prontuarioError} = await this.prontuarioService.createProntuario(
                     consulta.paciente_id,
-                    profissionalId,
+                    medicoId,
                     consulta.unidade_saude_id,
                     prontuarioDescricao,
                     cid10 ? {cid10} : {}
@@ -429,7 +429,7 @@ export class ConsultaService {
             const consultaAtualizada = new Consulta(
                 data.id,
                 data.paciente_id,
-                data.profissional_id,
+                data.medico_id,
                 data.unidade_saude_id,
                 data.observacoes,
                 data.cid10,
@@ -441,12 +441,12 @@ export class ConsultaService {
         }
     }
 
-    async deleteConsulta(id: string, profissionalId: string): Promise<{ data: boolean, error: Error | null }> {
+    async deleteConsulta(id: string, medicoId: string): Promise<{ data: boolean, error: Error | null }> {
         try {
             const {data: profissional} = await supabase
                 .from('funcionario')
                 .select('papel')
-                .eq('id', profissionalId)
+                .eq('id', medicoId)
                 .eq('ativo', true)
                 .single();
             if (!profissional || profissional.papel !== Papeis.MEDICO) {

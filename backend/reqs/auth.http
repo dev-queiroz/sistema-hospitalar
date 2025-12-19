@@ -1,12 +1,12 @@
 ### Registrar um novo admin
-POST https://sistema-hospitalar.onrender.com/api/auth/register-admin
+POST http://localhost:3000/api/auth/register-admin
 Content-Type: application/json
 
 {
   "email": "queirozdouglas466@gmail.com",
   "password": "Dv.23456",
   "nome": "Douglas Queiroz",
-  "adminSecret": "SuperSecretAdmin123",
+  "adminSecret": "Dv.23456",
   "cpf": "12345678901",
   "cns": "123456789012345",
   "dataNascimento": "1980-01-01",
@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### Login universal
-POST https://sistema-hospitalar.onrender.com/api/auth/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ### Esqueceu a senha
-POST https://sistema-hospitalar.onrender.com/api/auth/forgot-password
+POST http://localhost:3000/api/auth/forgot-password
 Content-Type: application/json
 
 {
