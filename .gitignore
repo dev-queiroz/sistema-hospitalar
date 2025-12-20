@@ -10,3 +10,4 @@ jest.config.js
 combined.log
 error.log
 dist
+reqs
