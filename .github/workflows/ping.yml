@@ -14,3 +14,12 @@ jobs:
         run: |
           echo "Pinging the server..."
           curl -f --max-time 60 https://sistema-hospitalar.onrender.com || exit 1
+
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run CI
+        run: |
+          echo "Running CI..."
+          npm run build
