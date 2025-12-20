@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "node dist/app.js",
     "build": "tsc",
-    "dev": "nodemon backend/src/app.ts"
+    "dev": "nodemon src/app.ts"
   },
   "repository": {
     "type": "git",
