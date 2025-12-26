@@ -6,7 +6,7 @@ export class Prescricao extends BaseEntity {
     unidadeSaudeId: string;
     detalhesPrescricao: string;
     cid10: string;
-    createdAt: Date
+    dataCriacao: Date
 
     constructor(
         id: string,
@@ -15,7 +15,7 @@ export class Prescricao extends BaseEntity {
         unidadeSaudeId: string,
         detalhesPrescricao: string,
         cid10: string,
-        createdAt: Date
+        dataCriacao: Date
     ) {
         super(id);
         this.pacienteId = pacienteId;
@@ -23,6 +23,6 @@ export class Prescricao extends BaseEntity {
         this.unidadeSaudeId = unidadeSaudeId;
         this.detalhesPrescricao = detalhesPrescricao;
         this.cid10 = cid10;
-        this.createdAt = createdAt;
+        this.dataCriacao = dataCriacao;
     }
 }

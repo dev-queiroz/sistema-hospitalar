@@ -1,7 +1,8 @@
-import {supabaseClient} from '../../../shared/database/supabase';
-import {Consulta} from '../model/Consulta';
-import {ProntuarioService} from '../../prontuario/service/ProntuarioService';
-import {Papeis, TipoUnidadeSaude} from '../../core/model/Enums';
+// src/service/ConsultaService.ts
+import { supabaseClient } from '@/shared/database/supabase';
+import { Consulta } from '../model/Consulta';
+import { ProntuarioService } from '../../prontuario/service/ProntuarioService';
+import { Papeis, TipoUnidadeSaude } from '../../core/model/Enums';
 
 const supabase = supabaseClient;
 
@@ -21,13 +22,13 @@ export class ConsultaService {
     ): Promise<{ data: Consulta | null, error: Error | null }> {
         try {
             if (!pacienteId || !medicoId || !unidadeSaudeId || !observacoes) {
-                new Error('Campos obrigatórios não preenchidos');
+                throw new Error('Campos obrigatórios não preenchidos');
             }
             if (observacoes.length < 10) {
-                new Error('Observações devem ter pelo menos 10 caracteres');
+                throw new Error('Observações devem ter pelo menos 10 caracteres');
             }
             if (cid10 && !/^[A-Z]\d{2}(\.\d{1,2})?$/.test(cid10)) {
-                new Error('CID-10 inválido (ex.: J45 ou J45.0)');
+                throw new Error('CID-10 inválido (ex.: J45 ou J45.0)');
             }
 
             const {data: paciente} = await supabase
@@ -37,7 +38,7 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!paciente) {
-                new Error('Paciente não encontrado');
+                throw new Error('Paciente não encontrado');
             }
 
             const {data: unidade} = await supabase
@@ -59,7 +60,7 @@ export class ConsultaService {
                 throw new Error('Apenas MEDICO ou ADMINISTRADOR_PRINCIPAL podem criar consultas');
             }
             if (profissional.papel === Papeis.ENFERMEIRO && unidade.tipo !== TipoUnidadeSaude.UPA) {
-                new Error('ENFERMEIRO só pode criar consultas em UPAs');
+                throw new Error('ENFERMEIRO só pode criar consultas em UPAs');
             }
 
             const {data, error} = await supabase
@@ -76,7 +77,7 @@ export class ConsultaService {
                 .select()
                 .single();
 
-            if (error) new Error(`Erro ao criar consulta: ${error.message}`);
+            if (error) throw new Error(`Erro ao criar consulta: ${error.message}`);
 
             const prontuarioDescricao = `Consulta realizada em ${new Date().toLocaleDateString('pt-BR')}. Observações: ${observacoes}${cid10 ? `. CID-10: ${cid10}` : ''}`;
             const {data: prontuario, error: prontuarioError} = await this.prontuarioService.createProntuario(
@@ -84,10 +85,10 @@ export class ConsultaService {
                 medicoId,
                 unidadeSaudeId,
                 prontuarioDescricao,
-                cid10 ? {cid10} : {}
+                cid10
             );
             if (prontuarioError || !prontuario) {
-                new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
+                throw new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
             }
 
             const consulta = new Consulta(
@@ -105,7 +106,7 @@ export class ConsultaService {
         }
     }
 
-    async getAllConsultas(usuarioId: string): Promise<{ data: Consulta[], error: Error | null }> {
+    async getAllConsultas(usuarioId: string): Promise<{ data: any[], error: Error | null }> {
         try {
             const {data: usuario} = await supabase
                 .from('funcionario')
@@ -114,26 +115,34 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
-                new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar todas as consultas');
+                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar todas as consultas');
             }
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('consulta')
-                .select('*')
+                .select(`
+                    *,
+                    paciente:paciente_id (nome),
+                    medico:medico_id (nome)
+                `)
                 .eq('ativo', true)
+                .order('data_consulta', { ascending: false })
                 .limit(100);
 
             if (error) throw new Error(`Erro ao listar consultas: ${error.message}`);
 
-            const consultas = data.map((d: any) => new Consulta(
-                d.id,
-                d.paciente_id,
-                d.medico_id,
-                d.unidade_saude_id,
-                d.observacoes,
-                d.cid10,
-                d.data_consulta
-            ));
+            const consultas = data.map((d: any) => ({
+                id: d.id,
+                paciente_id: d.paciente_id,
+                medico_id: d.medico_id,
+                unidade_saude_id: d.unidade_saude_id,
+                observacoes: d.observacoes,
+                cid10: d.cid10,
+                data_consulta: d.data_consulta,
+                paciente_nome: d.paciente?.nome || 'Paciente não encontrado',
+                medico_nome: d.medico?.nome || 'Médico não encontrado',
+            }));
+
             return {data: consultas, error: null};
         } catch (error) {
             return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
@@ -148,13 +157,18 @@ export class ConsultaService {
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
-                new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar consultas');
+                return {data: null, error: new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar consultas')};
             }
 
             const {data, error} = await supabase
                 .from('consulta')
-                .select('*')
+                .select(`
+                *,
+                paciente:paciente_id(nome),
+                funcionario:medico_id(nome)
+            `)
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
@@ -168,7 +182,9 @@ export class ConsultaService {
                 data.unidade_saude_id,
                 data.observacoes,
                 data.cid10,
-                data.data_consulta
+                data.data_consulta,
+                data.paciente?.nome,      // nome do paciente da tabela 'paciente'
+                data.funcionario?.nome    // nome do médico da tabela 'funcionario'
             );
             return {data: consulta, error: null};
         } catch (error) {
@@ -188,7 +204,7 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO)) {
-                new Error('Apenas MEDICO ou ENFERMEIRO podem visualizar consultas por paciente');
+                throw new Error('Apenas MEDICO ou ENFERMEIRO podem visualizar consultas por paciente');
             }
 
             const {data: paciente} = await supabase
@@ -197,7 +213,7 @@ export class ConsultaService {
                 .eq('id', pacienteId)
                 .eq('ativo', true)
                 .single();
-            if (!paciente) new Error('Paciente não encontrado');
+            if (!paciente) throw new Error('Paciente não encontrado');
 
             const {data, error} = await supabase
                 .from('consulta')
@@ -244,7 +260,7 @@ export class ConsultaService {
                 .eq('id', medicoId)
                 .eq('ativo', true)
                 .single();
-            if (!profissional) new Error('Profissional não encontrado');
+            if (!profissional) throw new Error('Profissional não encontrado');
 
             const {data, error} = await supabase
                 .from('consulta')
@@ -282,7 +298,7 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!admin || admin.papel !== Papeis.ADMINISTRADOR_PRINCIPAL) {
-                new Error('Apenas ADMINISTRADOR_PRINCIPAL pode listar atendimentos ativos');
+                throw new Error('Apenas ADMINISTRADOR_PRINCIPAL pode listar atendimentos ativos');
             }
 
             const {data: unidade} = await supabase
@@ -290,7 +306,7 @@ export class ConsultaService {
                 .select('id')
                 .eq('id', unidadeSaudeId)
                 .single();
-            if (!unidade) new Error('Unidade de saúde não encontrada');
+            if (!unidade) throw new Error('Unidade de saúde não encontrada');
 
             const {data, error} = await supabase
                 .from('consulta')
@@ -337,7 +353,7 @@ export class ConsultaService {
                 .select('id')
                 .eq('id', unidadeSaudeId)
                 .single();
-            if (!unidade) new Error('Unidade de saúde não encontrada');
+            if (!unidade) throw new Error('Unidade de saúde não encontrada');
 
             const {data, error} = await supabase
                 .from('consulta')
@@ -372,10 +388,10 @@ export class ConsultaService {
         try {
             if (!medicoId) throw new Error('ID do profissional é obrigatório');
             if (observacoes && observacoes.length < 10) {
-                new Error('Observações devem ter pelo menos 10 caracteres');
+                throw new Error('Observações devem ter pelo menos 10 caracteres');
             }
             if (cid10 && !/^[A-Z]\d{2}(\.\d{1,2})?$/.test(cid10)) {
-                new Error('CID-10 inválido (ex.: J45 ou J45.0)');
+                throw new Error('CID-10 inválido (ex.: J45 ou J45.0)');
             }
 
             const {data: profissional} = await supabase
@@ -385,7 +401,7 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!profissional || profissional.papel !== Papeis.MEDICO) {
-                new Error('Apenas MEDICO pode atualizar consultas');
+                throw new Error('Apenas MEDICO pode atualizar consultas');
             }
 
             const {data: consulta} = await supabase
@@ -394,7 +410,7 @@ export class ConsultaService {
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
-            if (!consulta) new Error('Consulta não encontrada');
+            if (!consulta) throw new Error('Consulta não encontrada');
 
             const updates: any = {};
             if (observacoes) updates.observacoes = observacoes;
@@ -417,10 +433,10 @@ export class ConsultaService {
                     medicoId,
                     consulta.unidade_saude_id,
                     prontuarioDescricao,
-                    cid10 ? {cid10} : {}
+                    cid10
                 );
                 if (prontuarioError || !prontuario) {
-                    new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
+                    throw new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
                 }
             }
 
@@ -448,7 +464,7 @@ export class ConsultaService {
                 .eq('ativo', true)
                 .single();
             if (!profissional || profissional.papel !== Papeis.MEDICO) {
-                new Error('Apenas MEDICO pode desativar consultas');
+                throw new Error('Apenas MEDICO pode desativar consultas');
             }
 
             const {data: consulta} = await supabase
@@ -457,14 +473,14 @@ export class ConsultaService {
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
-            if (!consulta) new Error('Consulta não encontrada');
+            if (!consulta) throw new Error('Consulta não encontrada');
 
             const {error} = await supabase
                 .from('consulta')
                 .update({ativo: false, data_desativacao: new Date().toISOString()})
                 .eq('id', id);
 
-            if (error) new Error(`Erro ao desativar consulta: ${error.message}`);
+            if (error) throw new Error(`Erro ao desativar consulta: ${error.message}`);
             return {data: true, error: null};
         } catch (error) {
             return {data: false, error: error instanceof Error ? error : new Error('Erro desconhecido')};

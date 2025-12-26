@@ -70,7 +70,7 @@ export class PrescricaoService {
                     unidade_saude_id: unidadeSaudeId,
                     detalhes_prescricao: detalhesPrescricao,
                     cid10,
-                    createdAt: new Date().toISOString(),
+                    data_criacao: new Date().toISOString(),
                     ativo: true,
                 })
                 .select()
@@ -84,7 +84,7 @@ export class PrescricaoService {
                 profissionalId,
                 unidadeSaudeId,
                 prontuarioDescricao,
-                {cid10}
+                cid10
             );
             if (prontuarioError || !prontuario) {
                 throw new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
@@ -97,7 +97,7 @@ export class PrescricaoService {
                 data.unidade_saude_id,
                 data.detalhes_prescricao,
                 data.cid10,
-                new Date(data.createdAt)
+                data.data_criacao
             );
             return {data: prescricao, error: null};
         } catch (error) {
@@ -105,123 +105,143 @@ export class PrescricaoService {
         }
     }
 
-    async getAllPrescricoes(usuarioId: string): Promise<{ data: Prescricao[], error: Error | null }> {
+    async getAllPrescricoes(usuarioId: string): Promise<{ data: any[], error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
+            const { data: usuario } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
                 throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prescrições');
             }
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('prescricao')
-                .select('*')
+                .select(`
+                    *,
+                    paciente:paciente_id (nome),
+                    profissional:profissional_id (nome)
+                `)
                 .eq('ativo', true)
+                .order('data_criacao', { ascending: false })
                 .limit(100);
 
             if (error) throw new Error(`Erro ao listar prescrições: ${error.message}`);
 
-            const prescricoes = data.map((d: any) => new Prescricao(
-                d.id,
-                d.paciente_id,
-                d.profissional_id,
-                d.unidade_saude_id,
-                d.detalhes_prescricao,
-                d.cid10,
-                new Date(d.createdAt)
-            ));
-            return {data: prescricoes, error: null};
+            const prescricoes = data.map(d => ({
+                id: d.id,
+                paciente_nome: d.paciente?.nome || '',
+                medico_nome: d.profissional?.nome || '',
+                data_criacao: d.data_criacao,
+                detalhesPrescricao: d.detalhes_prescricao,
+                cid10: d.cid10,
+            }));
+
+            return { data: prescricoes, error: null };
         } catch (error) {
-            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: [], error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
-    async getPrescricao(id: string, usuarioId: string): Promise<{ data: Prescricao | null, error: Error | null }> {
+    async getPrescricao(id: string, usuarioId: string): Promise<{ data: any | null, error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
+            const { data: usuario } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO)) {
                 throw new Error('Apenas MEDICO ou ENFERMEIRO podem visualizar prescrições');
             }
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('prescricao')
-                .select('*')
+                .select(`
+                    *,
+                    paciente:paciente_id (nome),
+                    profissional:profissional_id (nome)
+                `)
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
 
-            if (error || !data) return {data: null, error: new Error('Prescrição não encontrada')};
+            if (error || !data) {
+                return { data: null, error: new Error('Prescrição não encontrada') };
+            }
 
-            const prescricao = new Prescricao(
-                data.id,
-                data.paciente_id,
-                data.profissional_id,
-                data.unidade_saude_id,
-                data.detalhes_prescricao,
-                data.cid10,
-                new Date(data.createdAt)
-            );
-            return {data: prescricao, error: null};
+            const prescricao = {
+                id: data.id,
+                createdAt: data.data_criacao,
+                pacienteId: data.paciente_id,
+                profissionalId: data.profissional_id,
+                unidadeSaudeId: data.unidade_saude_id,
+                detalhesPrescricao: data.detalhes_prescricao,
+                cid10: data.cid10,
+                paciente_nome: data.paciente?.nome || 'Paciente não encontrado',
+                medico_nome: data.profissional?.nome || 'Médico não encontrado',
+            };
+
+            return { data: prescricao, error: null };
         } catch (error) {
-            return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
-    async listPrescricoesByPaciente(pacienteId: string, usuarioId: string): Promise<{
-        data: Prescricao[],
-        error: Error | null
-    }> {
+    async listPrescricoesByPaciente(pacienteId: string, usuarioId: string): Promise<{ data: any[], error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
+            const { data: usuario } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO)) {
                 throw new Error('Apenas MEDICO ou ENFERMEIRO podem visualizar prescrições');
             }
 
-            const {data: paciente} = await supabase
+            const { data: paciente } = await supabase
                 .from('paciente')
                 .select('id')
                 .eq('id', pacienteId)
                 .eq('ativo', true)
                 .single();
+
             if (!paciente) throw new Error('Paciente não encontrado');
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('prescricao')
-                .select('*')
+                .select(`
+                    *,
+                    profissional:profissional_id (nome)
+                `)
                 .eq('paciente_id', pacienteId)
                 .eq('ativo', true)
+                .order('data_criacao', { ascending: false })
                 .limit(100);
 
             if (error) throw new Error(`Erro ao listar prescrições: ${error.message}`);
 
-            const prescricoes = data.map((d: any) => new Prescricao(
-                d.id,
-                d.paciente_id,
-                d.profissional_id,
-                d.unidade_saude_id,
-                d.detalhes_prescricao,
-                d.cid10,
-                new Date(d.createdAt)
-            ));
-            return {data: prescricoes, error: null};
+            const prescricoes = data.map(d => ({
+                id: d.id,
+                createdAt: d.data_criacao,
+                profissionalId: d.profissional_id,
+                detalhesPrescricao: d.detalhes_prescricao,
+                cid10: d.cid10,
+                medico_nome: d.profissional?.nome || 'Médico não encontrado',
+            }));
+
+            return { data: prescricoes, error: null };
         } catch (error) {
-            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: [], error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
+
 
     async updatePrescricao(
         id: string,
@@ -288,7 +308,7 @@ export class PrescricaoService {
                     profissionalId,
                     prescricao.unidade_saude_id,
                     prontuarioDescricao,
-                    {cid10: cid10 || prescricao.cid10}
+                    prescricao.cid10
                 );
                 if (prontuarioError || !prontuario) {
                     throw new Error(`Erro ao criar entrada no prontuário: ${prontuarioError?.message || 'Erro desconhecido'}`);
@@ -302,7 +322,7 @@ export class PrescricaoService {
                 data.unidade_saude_id,
                 data.detalhes_prescricao,
                 data.cid10,
-                new Date(data.createdAt)
+                data.data_criacao
             );
             return {data: prescricaoAtualizada, error: null};
         } catch (error) {

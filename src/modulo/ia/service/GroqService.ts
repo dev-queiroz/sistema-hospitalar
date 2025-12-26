@@ -1,5 +1,5 @@
 import { Groq } from 'groq-sdk';
-import { supabaseServiceClient } from '../../../shared/database/supabase';
+import { supabaseServiceClient } from '@/shared/database/supabase';
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY!,

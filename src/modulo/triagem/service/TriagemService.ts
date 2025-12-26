@@ -123,65 +123,70 @@ export class TriagemService {
         }
     }
 
-    async getAllTriagens(usuarioId: string): Promise<{ data: Triagem[], error: Error | null }> {
+    async getAllTriagens(usuarioId: string): Promise<{ data: any[], error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
-                .from('funcionario')
-                .select('papel')
-                .eq('id', usuarioId)
-                .eq('ativo', true)
-                .single();
-
-            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
-                throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prontuários');
-            }
-
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('triagem')
-                .select('*')
+                .select(`
+                    *,
+                    paciente:paciente_id (nome),
+                    enfermeiro:enfermeiro_id (nome)
+                `)
                 .eq('ativo', true)
+                .order('created_at', { ascending: false })
                 .limit(100);
 
             if (error) throw new Error(`Erro ao listar triagens: ${error.message}`);
 
-            const triagens = data.map((d: any) => new Triagem(
-                d.id,
-                d.paciente_id,
-                d.enfermeiro_id,
-                d.unidade_saude_id,
-                d.nivel_gravidade,
-                d.sinais_vitais,
-                d.queixa_principal
-            ));
-            return {data: triagens, error: null};
+            const triagens = data.map(d => ({
+                id: d.id,
+                paciente_nome: d.paciente?.nome || '',
+                enfermeiro_nome: d.enfermeiro?.nome || '',
+                data_triagem: d.created_at,
+                nivel_gravidade: d.nivel_gravidade,
+                queixa_principal: d.queixa_principal,
+            }));
+
+            return { data: triagens, error: null };
         } catch (error) {
-            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: [], error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
     async getTriagem(id: string): Promise<{ data: Triagem | null, error: Error | null }> {
         try {
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('triagem')
-                .select('*')
+                .select(`
+                    *,
+                    paciente:paciente_id (nome),
+                    enfermeiro:enfermeiro_id (nome)
+                `)
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
 
-            if (error || !data) return {data: null, error: new Error('Triagem não encontrada')};
+            if (error || !data) {
+                return { data: null, error: new Error('Triagem não encontrada') };
+            }
 
-            const triagem = new Triagem(
-                data.id,
-                data.paciente_id,
-                data.enfermeiro_id,
-                data.unidade_saude_id,
-                data.nivel_gravidade,
-                data.sinais_vitais,
-                data.queixa_principal
-            );
-            return {data: triagem, error: null};
+            const triagem = {
+                id: data.id,
+                createdAt: new Date(data.created_at),
+                pacienteId: data.paciente_id,
+                enfermeiroId: data.enfermeiro_id,
+                unidadeSaudeId: data.unidade_saude_id,
+                nivel_gravidade: data.nivel_gravidade,
+                sinais_vitais: data.sinais_vitais,
+                data_triagem: data.data_triagem,
+                queixa_principal: data.queixa_principal,
+                paciente_nome: data.paciente?.nome || 'Paciente não encontrado',
+                enfermeiro_nome: data.enfermeiro?.nome || 'Enfermeiro não encontrado',
+            };
+
+            return { data: triagem as any, error: null };
         } catch (error) {
-            return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 

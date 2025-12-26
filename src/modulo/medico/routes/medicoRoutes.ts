@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {MedicoController} from '../controller/MedicoController';
-import {requireAuth, restrictTo} from '../../../middleware/auth';
+import {requireAuth, restrictTo} from '@/middleware/auth';
 import {Papeis} from '../../core/model/Enums';
 
 const router = Router();

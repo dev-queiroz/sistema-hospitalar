@@ -10,7 +10,7 @@ export class ProntuarioService {
         profissionalId: string,
         unidadeSaudeId: string,
         descricao: string,
-        dadosAnonimizados?: Record<string, string>
+        cid10: string
     ): Promise<{ data: Prontuario | null, error: Error | null }> {
         try {
             if (!pacienteId || !profissionalId || !unidadeSaudeId || !descricao) {
@@ -49,20 +49,29 @@ export class ProntuarioService {
                 throw new Error('Apenas MEDICO ou ENFERMEIRO podem criar prontuários');
             }
 
-            const {data, error} = await supabase
+            const payload: Record<string, any> = {
+                paciente_id: pacienteId,
+                profissional_id: profissionalId,
+                unidade_saude_id: unidadeSaudeId,
+                descricao,
+                cid10: cid10,
+                ativo: true,
+            };
+
+            console.log('Payload enviado para Supabase:', payload); // DEBUG — remova depois
+
+            const { data, error } = await supabase
                 .from('prontuario')
-                .insert({
-                    paciente_id: pacienteId,
-                    profissional_id: profissionalId,
-                    unidade_saude_id: unidadeSaudeId,
-                    descricao,
-                    dados_anonimizados: dadosAnonimizados || {},
-                    ativo: true,
-                })
+                .insert(payload)
                 .select()
                 .single();
 
-            if (error) throw new Error(`Erro ao criar prontuário: ${error.message}`);
+            if (error) {
+                console.error('Erro do Supabase:', error);
+                throw new Error(`Erro ao criar prontuário: ${error.message}`);
+            }
+
+            console.log('Dados retornados do Supabase:', data); // DEBUG
 
             const prontuario = new Prontuario(
                 data.id,
@@ -70,80 +79,104 @@ export class ProntuarioService {
                 data.profissional_id,
                 data.unidade_saude_id,
                 data.descricao,
-                data.dados_anonimizados
+                data.cid10
             );
-            return {data: prontuario, error: null};
+
+            return { data: prontuario, error: null };
         } catch (error) {
-            return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
-    async getAllProntuarios(usuarioId: string): Promise<{ data: Prontuario[], error: Error | null }> {
+    async getAllProntuarios(usuarioId: string): Promise<{ data: any[], error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
+            const { data: usuario } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
                 throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prontuários');
             }
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('prontuario')
-                .select('*')
+                .select(`
+                        *,
+                        paciente:paciente_id (nome),
+                        profissional:profissional_id (nome)
+                    `)
                 .eq('ativo', true)
+                .order('data_criacao', { ascending: false })
                 .limit(100);
 
             if (error) throw new Error(`Erro ao listar prontuários: ${error.message}`);
 
-            const prontuarios = data.map((d: any) => new Prontuario(
-                d.id,
-                d.paciente_id,
-                d.profissional_id,
-                d.unidade_saude_id,
-                d.descricao,
-                d.dados_anonimizados
-            ));
-            return {data: prontuarios, error: null};
+            const prontuarios = data.map(d => ({
+                id: d.id,
+                createdAt: d.data_criacao,
+                pacienteId: d.paciente_id,
+                profissionalId: d.profissional_id,
+                unidadeSaudeId: d.unidade_saude_id,
+                data: d.data_criacao,
+                descricao: d.descricao,
+                cid10: d.cid10,
+                paciente_nome: d.paciente?.nome || 'Paciente não encontrado',
+                profissional_nome: d.profissional?.nome || 'Profissional não encontrado',
+            }));
+
+            return { data: prontuarios, error: null };
         } catch (error) {
-            return {data: [], error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: [], error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
-    async getProntuario(id: string, usuarioId: string): Promise<{ data: Prontuario | null, error: Error | null }> {
+    async getProntuario(id: string, usuarioId: string): Promise<{ data: any | null, error: Error | null }> {
         try {
-            const {data: usuario} = await supabase
+            const { data: usuario } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', usuarioId)
                 .eq('ativo', true)
                 .single();
+
             if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
                 throw new Error('Apenas MEDICO, ENFERMEIRO ou ADMINISTRADOR_PRINCIPAL podem visualizar prontuários');
             }
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('prontuario')
-                .select('*')
+                .select(`
+                        *,
+                        paciente:paciente_id (nome),
+                        profissional:profissional_id (nome)
+                    `)
                 .eq('id', id)
                 .eq('ativo', true)
                 .single();
 
-            if (error || !data) return {data: null, error: new Error('Prontuário não encontrado')};
+            if (error || !data) {
+                return { data: null, error: new Error('Prontuário não encontrado') };
+            }
 
-            const prontuario = new Prontuario(
-                data.id,
-                data.paciente_id,
-                data.profissional_id,
-                data.unidade_saude_id,
-                data.descricao,
-                data.dados_anonimizados
-            );
-            return {data: prontuario, error: null};
+            const prontuario = {
+                id: data.id,
+                createdAt: data.data_criacao,
+                pacienteId: data.paciente_id,
+                profissionalId: data.profissional_id,
+                unidadeSaudeId: data.unidade_saude_id,
+                data: data.data_criacao,
+                descricao: data.descricao,
+                cid10: data.cid10,
+                paciente_nome: data.paciente?.nome || 'Paciente não encontrado',
+                profissional_nome: data.profissional?.nome || 'Profissional não encontrado',
+            };
+
+            return { data: prontuario, error: null };
         } catch (error) {
-            return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
         }
     }
 
@@ -185,7 +218,7 @@ export class ProntuarioService {
                 d.profissional_id,
                 d.unidade_saude_id,
                 d.descricao,
-                d.dados_anonimizados
+                d.cid10
             ));
             return {data: prontuarios, error: null};
         } catch (error) {
@@ -196,7 +229,7 @@ export class ProntuarioService {
     async updateProntuario(
         id: string,
         descricao?: string,
-        dadosAnonimizados?: Record<string, string>,
+        cid10?: string,
         profissionalId?: string
     ): Promise<{ data: Prontuario | null, error: Error | null }> {
         try {
@@ -225,7 +258,7 @@ export class ProntuarioService {
 
             const updates: any = {};
             if (descricao) updates.descricao = descricao;
-            if (dadosAnonimizados !== undefined) updates.dados_anonimizados = dadosAnonimizados;
+            if (cid10) updates.cid10 = cid10;
 
             const {data, error} = await supabase
                 .from('prontuario')
@@ -243,7 +276,7 @@ export class ProntuarioService {
                 data.profissional_id,
                 data.unidade_saude_id,
                 data.descricao,
-                data.dados_anonimizados
+                data.cid10
             );
             return {data: prontuarioAtualizado, error: null};
         } catch (error) {

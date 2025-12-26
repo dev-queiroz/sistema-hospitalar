@@ -42,20 +42,14 @@ export class ProntuarioController {
             const usuarioId = req.user?.id;
             if (!usuarioId) throw new Error('ID do usuário não encontrado');
 
-            logger.info('Creating prontuário', {usuarioId, pacienteId: validated.pacienteId});
-            
-            const dadosAnonimizados = validated.dadosAnonimizados
-                ? Object.fromEntries(
-                    Object.entries(validated.dadosAnonimizados).map(([key, value]) => [key, String(value)])
-                )
-                : undefined;
+            logger.info('Creating prontuário', {validated, usuarioId});
 
             const {data, error} = await this.prontuarioService.createProntuario(
                 validated.pacienteId,
                 usuarioId,
                 validated.unidadeSaudeId,
                 validated.descricao,
-                dadosAnonimizados as Record<string, string> | undefined
+                validated.cid10
             );
 
             if (error || !data) {
@@ -144,7 +138,7 @@ export class ProntuarioController {
             const {data, error} = await this.prontuarioService.updateProntuario(
                 id,
                 validated.descricao,
-                validated.dadosAnonimizados,
+                validated.cid10,
                 usuarioId
             );
             if (error || !data) {

@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
-import {supabaseClient} from '../shared/database/supabase';
-import {Papeis} from '../modulo/core/model/Enums';
+import {supabaseClient} from '@/shared/database/supabase';
+import {Papeis} from '@/modulo/core/model/Enums';
 import dotenv from 'dotenv';
 
 dotenv.config();

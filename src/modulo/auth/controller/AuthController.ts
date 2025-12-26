@@ -1,151 +1,70 @@
+// src/controller/AuthController.ts
 import { Request, Response } from 'express';
-import { AuthService } from '../services/auth.service';
-import { AuthErrorHandler } from '../utils/error-handler';
-import { LoginDTO, RegisterAdminDTO, ForgotPasswordDTO, ResetPasswordDTO } from '../dto/auth.dto';
-import {
-    AuthenticatedRequest,
-    LoginResponse,
-    SuccessResponse,
-    ErrorResponse, AdminRegistrationResponse
-} from '../types/auth.types';
-import { AUTH_MESSAGES } from '../constants/auth.constants';
-import {TokenService} from "../services/token.service";
+import { supabaseClient } from '@/shared/database/supabase';
+import { LoginDTO, RegisterAdminDTO } from '../dto/auth.dto';
+import { AuthService } from '../services/AuthService';
+import { z } from 'zod';
+
+const authService = new AuthService();
 
 export class AuthController {
-    private authService: AuthService;
-
-    constructor() {
-        this.authService = new AuthService();
-    }
-
-    /**
-     * @route POST /auth/login
-     * @desc Autentica um usuário e retorna tokens de acesso
-     * @access Public
-     */
-    public async login(req: Request, res: Response<LoginResponse | ErrorResponse>): Promise<void> {
+    async login(req: Request, res: Response) {
         try {
-            const loginData = LoginDTO.parse(req.body);
-            const authResponse = await this.authService.login(loginData);
+            const { email, password } = LoginDTO.parse(req.body);
+            const result = await authService.login(email, password);
 
-            res.status(200).json(authResponse);
+            return res.status(200).json(result);
         } catch (error) {
-            AuthErrorHandler.handleError(error, res);
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ error: 'Dados inválidos', details: error.message });
+            }
+            return res.status(400).json({ error: (error as Error).message });
         }
     }
 
-    /**
-     * @route POST /auth/register/admin
-     * @desc Registra um novo administrador
-     */
-    public async registerAdmin(
-        req: AuthenticatedRequest,
-        res: Response<AdminRegistrationResponse | ErrorResponse>
-    ): Promise<void> {
+    async registerAdmin(req: Request, res: Response) {
         try {
-            const adminData = RegisterAdminDTO.parse(req.body);
-            const result = await this.authService.registerAdmin(adminData);
+            const data = RegisterAdminDTO.parse(req.body);
+            const result = await authService.registerAdmin(data);
 
-            res.status(201).json(result);
+            return res.status(201).json(result);
         } catch (error) {
-            AuthErrorHandler.handleError(error, res);
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ error: 'Dados inválidos', details: error.message });
+            }
+            return res.status(400).json({ error: (error as Error).message });
         }
     }
 
-    /**
-     * @route POST /auth/forgot-password
-     * @desc Solicita a redefinição de senha
-     * @access Public
-     */
-    public async forgotPassword(
-        req: Request,
-        res: Response<SuccessResponse | ErrorResponse>
-    ): Promise<void> {
+    async forgotPassword(req: Request, res: Response) {
         try {
-            const { email } = ForgotPasswordDTO.parse(req.body);
-            await this.authService.forgotPassword(email);
+            const { email } = z.object({ email: z.string().email() }).parse(req.body);
+            await authService.forgotPassword(email);
 
-            res.status(200).json({
-                success: true,
-                message: AUTH_MESSAGES.PASSWORD_RESET_SENT
-            });
+            return res.status(200).json({ message: 'Se o email existir, você receberá um link de recuperação' });
         } catch (error) {
-            AuthErrorHandler.handleError(error, res);
+            return res.status(400).json({ error: 'Email inválido' });
         }
     }
 
-    /**
-     * @route POST /auth/reset-password
-     * @desc Envia um email para redefinição de senha
-     */
-    public async resetPassword(
-        req: Request,
-        res: Response<SuccessResponse | ErrorResponse>
-    ): Promise<void> {
+    async me(req: Request, res: Response) {
         try {
-            const { email } = ResetPasswordDTO.parse(req.body);
-
-            await this.authService.resetPassword(email);
-
-            res.status(200).json({
-                success: true,
-                message: AUTH_MESSAGES.PASSWORD_RESET_SENT
-            });
-        } catch (error) {
-            AuthErrorHandler.handleError(error, res);
-        }
-    }
-
-    /**
-     * @route POST /auth/refresh-token
-     * @desc Atualiza o token de acesso
-     */
-    public async refreshToken(
-        req: Request,
-        res: Response<{ access_token: string; expires_in: number } | ErrorResponse>
-    ): Promise<void> {
-        try {
-            const { refresh_token } = req.body;
-
-            if (!refresh_token) {
-                new Error('Refresh token é obrigatório');
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return res.status(401).json({ error: 'Token não fornecido' });
             }
 
-            const tokenService = TokenService.getInstance();
-            const accessToken = await tokenService.refreshAccessToken(refresh_token);
+            const token = authHeader.split(' ')[1];
 
-            res.status(200).json({
-                access_token: accessToken,
-                expires_in: 15 * 60
-            });
-        } catch (error) {
-            AuthErrorHandler.handleError(error, res);
-        }
-    }
-
-    /**
-     * @route POST /auth/logout
-     * @desc Realiza o logout do usuário
-     * @access Private
-     */
-    public async logout(
-        req: AuthenticatedRequest,
-        res: Response<SuccessResponse | ErrorResponse>
-    ): Promise<void> {
-        try {
-            const token = req.headers.authorization?.split(' ')[1];
-
-            if (token) {
-                const tokenService = TokenService.getInstance();
-                await tokenService.revokeRefreshToken(token);
+            const profile = await authService.getCurrentUserProfile(token);
+            if (!profile) {
+                return res.status(401).json({ error: 'Usuário não autenticado ou perfil não encontrado' });
             }
 
-            res.status(200).json({
-                success: true,
-                message: AUTH_MESSAGES.LOGOUT_SUCCESS
-            });
+            return res.status(200).json(profile);
         } catch (error) {
-            AuthErrorHandler.handleError(error, res);
+            console.error('Erro em /me:', error);
+            return res.status(500).json({ error: 'Erro interno do servidor' });
         }
     }
 }

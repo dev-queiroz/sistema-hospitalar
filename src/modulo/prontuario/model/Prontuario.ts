@@ -6,7 +6,7 @@ export class Prontuario extends BaseEntity {
     unidadeSaudeId: string;
     data: Date;
     descricao: string;
-    dadosAnonimizados: Record<string, string>;
+    cid10?: string;
 
     constructor(
         id: string,
@@ -14,14 +14,14 @@ export class Prontuario extends BaseEntity {
         profissionalId: string,
         unidadeSaudeId: string,
         descricao: string,
-        dadosAnonimizados: Record<string, string>
+        cid10?: string,
     ) {
         super(id);
         this.pacienteId = pacienteId;
         this.profissionalId = profissionalId;
         this.data = new Date();
         this.descricao = descricao;
-        this.dadosAnonimizados = dadosAnonimizados;
+        this.cid10 = cid10;
         this.unidadeSaudeId = unidadeSaudeId;
     }
 }

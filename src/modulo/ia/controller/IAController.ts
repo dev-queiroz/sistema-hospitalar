@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { GroqService } from '../service/GroqService';
 import { Papeis } from '../../core/model/Enums';
-import {supabaseServiceClient} from "../../../shared/database/supabase";
+import {supabaseServiceClient} from "@/shared/database/supabase";
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; papel: Papeis };

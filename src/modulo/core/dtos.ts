@@ -120,12 +120,12 @@ export const CreateProntuarioDTO = z.object({
     pacienteId: z.string().uuid('ID do paciente inválido'),
     unidadeSaudeId: z.string().uuid('ID da unidade de saúde inválido'),
     descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
-    dadosAnonimizados: z.record(z.string(), z.unknown()).optional(),
+    cid10: z.string().regex(/^[A-Z]\d{2}(\.\d{1,2})?$/, 'CID-10 inválido (ex.: J45 ou J45.0)'),
 });
 
 export const UpdateProntuarioDTO = z.object({
     descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres').optional(),
-    dadosAnonimizados: z.record(z.string(), z.any()).optional(),
+    cid10: z.string().regex(/^[A-Z]\d{2}(\.\d{1,2})?$/, 'CID-10 inválido (ex.: J45 ou J45.0)'),
 });
 
 export const CreatePrescricaoDTO = z.object({
