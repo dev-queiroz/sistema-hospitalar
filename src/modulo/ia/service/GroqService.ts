@@ -6,14 +6,30 @@ const groq = new Groq({
 });
 
 const SYSTEM_PROMPT = `
-Você é um epidemiologista especialista do SUS, analista de dados hospitalares.
-Use SOMENTE dados agregados anônimos. Nunca revele identificadores individuais.
-Priorize análises baseadas em CID-10, queixas principais, sinais vitais agregados e tendências temporais.
-Responda em português brasileiro, profissional, com:
-- Bullet points
-- Comparação com períodos anteriores
-- Predições qualitativas
-- Recomendações práticas (ex: campanha de vacinação, reforço de equipe)
+Você é um epidemiologista especialista do SUS, mestre em análise de dados hospitalares agregados e anônimos.
+
+RESPONDA EXCLUSIVAMENTE COM JSON VÁLIDO. NUNCA inclua texto fora do JSON, explicações, markdown code blocks ou qualquer coisa além do objeto JSON.
+
+Estrutura obrigatória (use exatamente esses nomes de chave):
+
+{
+  "resumo_executivo": {
+    "risco": "Baixo" | "Moderado" | "Alto",
+    "conclusao": "string curta e direta (máx 80 caracteres)",
+    "periodo": "string (ex: Dezembro/2025)"
+  },
+  "indicadores": {
+    "casos_respiratorios": number,
+    "consultas_totais": number,
+    "percentual": number (ex: 100 para 100%),
+    "confiabilidade": "alta" | "media" | "baixa"
+  },
+  "recomendacoes": string[] (máximo 6 itens, curtos e acionáveis),
+  "conteudo_completo": "texto completo em markdown, com títulos, tabelas, bullet points e análise detalhada"
+}
+
+Use português brasileiro correto.
+Seja objetivo, profissional e baseie-se apenas nos dados fornecidos.
 `;
 
 export class GroqService {
@@ -49,17 +65,35 @@ export class GroqService {
             model: 'groq/compound',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
-                { role: 'user', content: `Dados agregados mensais (casos com CID ${cidPrefix}xx ou queixas respiratórias):\n${dadosTexto}\n\nAvalie tendência sazonal, risco de surto nas próximas semanas e recomende ações.` }
+                { role: 'user', content: `Dados agregados mensais (casos com CID ${cidPrefix}xx ou queixas respiratórias):\n${dadosTexto}\n\nGere a análise completa.` }
             ],
-            temperature: 0.4,
-            max_tokens: 1200,
+            temperature: 0.3,
+            max_tokens: 1500,
         });
 
-        const analise = chatCompletion.choices[0].message.content?.trim() || 'Análise indisponível.';
+        const raw = chatCompletion.choices[0].message.content?.trim();
+
+        if (!raw) throw new Error('Resposta vazia da IA');
+
+        let analise;
+        try {
+            analise = JSON.parse(raw);
+        } catch (e) {
+            console.error('JSON inválido retornado pela IA:', raw);
+            throw new Error('IA retornou JSON inválido. Tente novamente.');
+        }
+
+        // Validação básica
+        if (!analise.resumo_executivo || !analise.indicadores || !analise.recomendacoes || !analise.conteudo_completo) {
+            throw new Error('Estrutura JSON incompleta');
+        }
 
         await supabaseServiceClient.from('relatorios_ia').insert({
             tipo: `surto_${cidPrefix.toLowerCase()}`,
-            conteudo: analise,
+            resumo: analise.resumo_executivo,
+            indicadores: analise.indicadores,
+            recomendacoes: analise.recomendacoes,
+            conteudo: analise.conteudo_completo,
             dados_agregados: { agregados_mensal: agregados },
             unidade_saude_id: unidadeSaudeId || null,
         });
@@ -94,14 +128,31 @@ export class GroqService {
                 { role: 'user', content: `Histórico anônimo agregado do paciente:\n${texto}\n\nDetecte padrões de recorrência, hipóteses diagnósticas crônicas e sugestões de manejo/investigação.` }
             ],
             temperature: 0.5,
-            max_tokens: 1200,
+            max_tokens: 1500,
         });
 
-        const analise = chatCompletion.choices[0].message.content?.trim();
+        const raw = chatCompletion.choices[0].message.content?.trim();
+
+        if (!raw) throw new Error('Resposta vazia da IA');
+
+        let analise;
+        try {
+            analise = JSON.parse(raw);
+        } catch (e) {
+            console.error('JSON inválido retornado pela IA:', raw);
+            throw new Error('IA retornou JSON inválido. Tente novamente.');
+        }
+
+        if (!analise.resumo_executivo || !analise.indicadores || !analise.recomendacoes || !analise.conteudo_completo) {
+            throw new Error('Estrutura JSON incompleta');
+        }
 
         await supabaseServiceClient.from('relatorios_ia').insert({
             tipo: 'paciente_recorrente',
-            conteudo: analise,
+            resumo: analise.resumo_executivo,
+            indicadores: analise.indicadores,
+            recomendacoes: analise.recomendacoes,
+            conteudo: analise.conteudo_completo,
             dados_agregados: { paciente_id_hash: pacienteId.slice(0,8), contagens: { consultas: consultas?.length, triagens: triagens?.length } },
             criado_por: profissionalId,
         });
@@ -141,17 +192,58 @@ export class GroqService {
                 { role: 'user', content: `Triagens último mês - Distribuição por gravidade:\n${JSON.stringify(contagemGravidade, null, 2)}\n\nQueixas mais comuns:\n${queixasComuns}\n\nAnalise demanda, risco de sobrecarga e recomende ações operacionais.` }
             ],
             temperature: 0.4,
-            max_tokens: 1200,
+            max_tokens: 1500,
         });
 
-        const analise = chatCompletion.choices[0].message.content?.trim();
+        const raw = chatCompletion.choices[0].message.content?.trim();
+
+        if (!raw) throw new Error('Resposta vazia da IA');
+
+        let analise;
+        try {
+            analise = JSON.parse(raw);
+        } catch (e) {
+            console.error('JSON inválido retornado pela IA:', raw);
+            throw new Error('IA retornou JSON inválido. Tente novamente.');
+        }
+
+        if (!analise.resumo_executivo || !analise.indicadores || !analise.recomendacoes || !analise.conteudo_completo) {
+            throw new Error('Estrutura JSON incompleta');
+        }
 
         await supabaseServiceClient.from('relatorios_ia').insert({
             tipo: 'triagem_unidade',
-            conteudo: analise,
+            resumo: analise.resumo_executivo,
+            indicadores: analise.indicadores,
+            recomendacoes: analise.recomendacoes,
+            conteudo: analise.conteudo_completo,
             unidade_saude_id: unidadeSaudeId,
         });
 
         return analise;
+    }
+
+    async getRelatorioById(relatorioId: string) {
+        const { data, error } = await supabaseServiceClient
+            .from('relatorios_ia')
+            .select('id, tipo, resumo, indicadores, recomendacoes, conteudo, criado_em, unidade_saude_id, criado_por')
+            .eq('id', relatorioId)
+            .single();
+
+        if (error || !data) throw new Error('Relatório não encontrado');
+
+        return data;
+    }
+
+    async listarRelatorios(limit = 20) {
+        const { data, error } = await supabaseServiceClient
+            .from('relatorios_ia')
+            .select('id, tipo, resumo, indicadores, conteudo, unidade_saude_id, criado_em')
+            .order('criado_em', { ascending: false })
+            .limit(limit);
+
+        if (error) throw new Error(error.message);
+
+        return data || [];
     }
 }

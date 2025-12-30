@@ -34,4 +34,11 @@ router.get(
     iaController.listarRelatorios.bind(iaController)
 );
 
+router.get(
+    '/relatorios/:relatorioId',
+    requireAuth,
+    restrictTo(Papeis.ADMINISTRADOR_PRINCIPAL, Papeis.MEDICO, Papeis.ENFERMEIRO),
+    iaController.getRelatorioById.bind(iaController)
+)
+
 export { router };

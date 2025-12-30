@@ -18,7 +18,7 @@ export class IAController {
 
             res.status(200).json({
                 sucesso: true,
-                relatorio,
+                relatorio, // agora é objeto JSON estruturado
                 unidade_saude_id: unidadeSaudeId || null,
                 gerado_em: new Date().toISOString()
             });
@@ -45,11 +45,11 @@ export class IAController {
                 return;
             }
 
-            const analise = await groqService.analisarPacienteRecorrente(pacienteId, profissionalId);
+            const relatorio = await groqService.analisarPacienteRecorrente(pacienteId, profissionalId);
 
             res.status(200).json({
                 sucesso: true,
-                analise,
+                relatorio, // agora é objeto JSON estruturado
                 paciente_id: pacienteId,
                 gerado_em: new Date().toISOString()
             });
@@ -74,7 +74,7 @@ export class IAController {
 
             res.status(200).json({
                 sucesso: true,
-                relatorio,
+                relatorio, // agora é objeto JSON estruturado
                 unidade_saude_id: unidadeSaudeId,
                 gerado_em: new Date().toISOString()
             });
@@ -90,21 +90,38 @@ export class IAController {
         try {
             const limit = parseInt(req.query.limit as string) || 20;
 
-            const { data, error } = await supabaseServiceClient
-                .from('relatorios_ia')
-                .select('id, tipo, conteudo, unidade_saude_id, criado_em')
-                .order('criado_em', { ascending: false })
-                .limit(limit);
-
-            if (error) new Error(error.message);
+            const relatorios = await groqService.listarRelatorios(limit);
 
             res.status(200).json({
                 sucesso: true,
-                relatorios: data
+                relatorios // agora com resumo, indicadores, etc.
             });
         } catch (error: any) {
             res.status(500).json({
                 erro: 'Falha ao listar relatórios',
+                mensagem: error.message
+            });
+        }
+    }
+
+    async getRelatorioById(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const { relatorioId } = req.params;
+
+            if (!relatorioId) {
+                res.status(400).json({ erro: 'ID do relatório é obrigatório' });
+                return;
+            }
+
+            const relatorio = await groqService.getRelatorioById(relatorioId);
+
+            res.status(200).json({
+                sucesso: true,
+                relatorio // estruturado: resumo, indicadores, recomendacoes, conteudo
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                erro: 'Falha ao obter relatório',
                 mensagem: error.message
             });
         }
