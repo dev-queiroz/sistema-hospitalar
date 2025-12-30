@@ -12,10 +12,10 @@ export class Consulta extends BaseEntity {
     pacienteId: string;
     profissionalId: string;
     unidadeSaudeId: string;
-    data: Date;
+    data_consulta: Date;
     observacoes: string;
     cid10?: string | null;
-    pacienteNome?: Paciente["nome"];
+    paciente_nome?: Paciente["nome"];
     medicoNome?: Medico["nome"];
 
     constructor(
@@ -23,20 +23,20 @@ export class Consulta extends BaseEntity {
         pacienteId: string,
         profissionalId: string,
         unidadeSaudeId: string,
-        data: Date,
+        data_consulta: Date,
         observacoes: string,
         cid10?: string | null,
-        pacienteNome?: Paciente["nome"],
+        paciente_nome?: Paciente["nome"],
         medicoNome?: Medico["nome"]
     ) {
         super(id);
         this.pacienteId = pacienteId;
         this.profissionalId = profissionalId;
         this.unidadeSaudeId = unidadeSaudeId;
-        this.data = data;
+        this.data_consulta = data_consulta;
         this.observacoes = observacoes;
         this.cid10 = cid10;
-        this.pacienteNome = pacienteNome;
+        this.paciente_nome = paciente_nome;
         this.medicoNome = medicoNome;
     }
 }

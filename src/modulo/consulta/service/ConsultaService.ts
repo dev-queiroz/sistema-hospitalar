@@ -180,12 +180,13 @@ export class ConsultaService {
                 data.paciente_id,
                 data.medico_id,
                 data.unidade_saude_id,
+                data.data_consulta,
                 data.observacoes,
                 data.cid10,
-                data.data_consulta,
-                data.paciente?.nome,      // nome do paciente da tabela 'paciente'
-                data.funcionario?.nome    // nome do médico da tabela 'funcionario'
+                data.paciente?.nome ?? null,
+                data.funcionario?.nome ?? null
             );
+
             return {data: consulta, error: null};
         } catch (error) {
             return {data: null, error: error instanceof Error ? error : new Error('Erro desconhecido')};

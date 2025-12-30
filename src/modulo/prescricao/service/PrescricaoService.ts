@@ -155,8 +155,8 @@ export class PrescricaoService {
                 .eq('ativo', true)
                 .single();
 
-            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO)) {
-                throw new Error('Apenas MEDICO ou ENFERMEIRO podem visualizar prescrições');
+            if (!usuario || (usuario.papel !== Papeis.MEDICO && usuario.papel !== Papeis.ENFERMEIRO && usuario.papel !== Papeis.ADMINISTRADOR_PRINCIPAL)) {
+                throw new Error('Apenas MEDICO, ENFERMEIRO e ADMINISTRADOR_PRINCIPAL podem visualizar prescrições');
             }
 
             const { data, error } = await supabase
@@ -176,7 +176,7 @@ export class PrescricaoService {
 
             const prescricao = {
                 id: data.id,
-                createdAt: data.data_criacao,
+                data_criacao: data.data_criacao,
                 pacienteId: data.paciente_id,
                 profissionalId: data.profissional_id,
                 unidadeSaudeId: data.unidade_saude_id,

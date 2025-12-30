@@ -399,46 +399,73 @@ export class UnidadeSaudeService {
         }
     }
 
-    async associarFuncionarioUnidade(funcionarioId: string, unidadeSaudeId: string, adminId: string): Promise<{
-        data: boolean,
-        error: Error | null
-    }> {
+    async associarFuncionarioUnidade(
+        unidadeSaudeId: string,
+        funcionarioId: string,
+        adminId: string
+    ): Promise<{ data: boolean; error: Error | null }> {
         try {
-            const {data: admin} = await supabase
+            // 1. Valida admin
+            const { data: admin } = await supabase
                 .from('funcionario')
                 .select('papel')
                 .eq('id', adminId)
                 .single();
+
             if (!admin || admin.papel !== Papeis.ADMINISTRADOR_PRINCIPAL) {
                 throw new Error('Apenas ADMINISTRADOR_PRINCIPAL pode associar funcionários a unidades');
             }
 
-            const {data: funcionario} = await supabase
+            // 2. Valida funcionário
+            const { data: funcionario } = await supabase
                 .from('funcionario')
                 .select('id')
                 .eq('id', funcionarioId)
                 .single();
+
             if (!funcionario) {
                 throw new Error('Funcionário não encontrado');
             }
 
-            const {data: unidade} = await supabase
+            // 3. Valida unidade destino
+            const { data: unidade } = await supabase
                 .from('unidade_saude')
                 .select('id')
                 .eq('id', unidadeSaudeId)
                 .single();
+
             if (!unidade) {
                 throw new Error('Unidade de saúde não encontrada');
             }
 
-            const {error} = await supabase
+            // 4. Remove vínculo atual (SE EXISTIR)
+            const { error: deleteError } = await supabase
                 .from('funcionario_unidade')
-                .insert({funcionario_id: funcionarioId, unidade_saude_id: unidadeSaudeId});
+                .delete()
+                .eq('funcionario_id', funcionarioId);
 
-            if (error) throw new Error(`Erro ao associar funcionário à unidade: ${error.message}`);
-            return {data: true, error: null};
+            if (deleteError) {
+                throw new Error(`Erro ao remover vínculo anterior: ${deleteError.message}`);
+            }
+
+            // 5. Cria novo vínculo
+            const { error: insertError } = await supabase
+                .from('funcionario_unidade')
+                .insert({
+                    funcionario_id: funcionarioId,
+                    unidade_saude_id: unidadeSaudeId
+                });
+
+            if (insertError) {
+                throw new Error(`Erro ao associar funcionário à nova unidade: ${insertError.message}`);
+            }
+
+            return { data: true, error: null };
         } catch (error) {
-            return {data: false, error: error instanceof Error ? error : new Error('Erro desconhecido')};
+            return {
+                data: false,
+                error: error instanceof Error ? error : new Error('Erro desconhecido')
+            };
         }
     }
 }

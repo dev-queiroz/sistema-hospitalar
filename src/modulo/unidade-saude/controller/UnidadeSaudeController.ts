@@ -149,7 +149,7 @@ export class UnidadeSaudeController {
     async associarFuncionario(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const unidadeSaudeId = req.params.unidadeSaudeId;
-            const funcionarioId = req.body.funcionarioId;
+            const funcionarioId = req.params.funcionarioId;
             const adminId = req.user?.id;
             if (!adminId) throw new Error('ID do administrador não encontrado');
 
